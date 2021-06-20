@@ -1,0 +1,174 @@
+settings:
+  #Admin permission: inventorykeeper.admin
+  #the plugin only works when the world gamerule keepInventory is false.
+  keep-inventory-item:
+    #item-id: '280' You can use number id in 1.13-.
+    #item-id: 'wood:4'
+    #in 1.12 or lower, use item-id: 'item-id:sub-id'
+    #To use custom player heads, add the following setting:
+    #custom-texture: base64 value
+    item-id: stick
+    #to use custom model, add custom-model-data:  (1.13+ only)
+    #custom-model-data: 0
+    item-name: '&aSaving stick'
+    item-lore:
+      - '&7Keeping this in your inventory,'
+      - '&7When you died, this stick will'
+      - '&7save &eyour inventory'
+    # - ENCHANTMENT-LEVEL
+    #item-enchantments: []
+    #(1.13+) Enchantments available here: https://minecraft.gamepedia.com/Enchanting#Summary_of_enchantments
+    #(1.13+) Enchantment name should be a minecraft namespaced id.
+    #***
+    #(1.12-) Enchantments available here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/enchantments/Enchantment.html
+    #Example:
+    # unbreaking is for 1.13+ while durability is for 1.12-
+    item-enchantments:
+      - unbreaking-10
+  #if set it to true, player with the item will not lose any exp when died.
+  #if save-exp set to true, exp-lose-percentage will not work.
+  save-exp: false
+  # set to 10 means losing 10% exp when they died. (eg: 70 levels drops 7 levels)
+  #this(percentage) should be lower than 100!
+  #exp-lose-percentage: 10 means player will lose 10% exp.
+  #To use random system:
+  #exp-lose-percentage: 10-30 means player will lose 10-30 % exp
+  exp-lose-percentage: 10-30
+  #When players in disabled worlds, the item will not work.
+  disabled-worlds:
+    - disabled-world
+  #recommended to set it to true
+  #When the keeping inventory item is a block, this will prevent players placing it.
+  prevent-placing-the-item: true
+  #When player died, these commands will be executed
+  # %player% for player
+  # %random% for a random number
+  # To generate random number, the command format should be min|max|command
+  # Example: - '100|200|eco take %player% %random%' means taking 100-200 coins from player
+  # To execute command as OP, add [OP] in head of command.
+  # Example: - '[OP]fly off'
+  run-commands-on-death:
+    - 'eco give %player% 50'
+  #When player died, random one of these command groups will be executed.
+  # Random command support multiple commands, you can use ";" to separate multiple commands, dont ADD ANY SPCAES after ";"
+  run-random-commands-on-death:
+    - '100|200|eco take %player% %random%;tell %player% You have lost %random% coins!!!'
+    - 'eco take %player% 1000;tell %player% You have lost 1000 coins!!!'
+  #When player respawns, these commands will be executed
+  run-commands-on-respawn:
+    - '[OP]back'
+  #When player respawns, random one of these command groups will be executed.
+  run-random-commands-on-respawn: []
+  #If you are running modded server and Galacticraft mod installed, turn it on to keep
+  #galacticraft inventory.
+  galacticraft-mod-support: false
+  #Clear items with curse of vanishing when player dies.
+  # Only for 1.11+!
+  clear-vanishing-curse-items: true
+  #Drop items with curse of binding when player dies.
+  # Only for 1.11+!
+  drop-binding-curse-items: false
+  #Execute commands if player inventory drops on death.
+  run-commands-on-death-if-drops:
+    - 'eco take %player% 50'
+    - '[OP]fly off'
+  #Execute a random command group if player inventory drops on death.
+  run-random-commands-on-death-if-drops:
+    - '10|50|eco take %player% %random%;tell %player% You lost %random%coins!'
+    - 'tell %player% You died!'
+  #Execute commands if player inventory drops on respawn.
+  run-commands-on-respawn-if-drops:
+    - '10|40|eco take %player% %random%'
+  #Execute a random command group if player inventory drops on respawn.
+  run-random-commands-on-respawn-if-drops:
+    - '15|90|effect %player% minecraft:nausea %random% 0'
+  #The following are the settings for the effective death types
+  #When a death type is set to true, the inventory will be restored if the player died from this death type
+  #If set it to false, the saving stick will not work.
+  #For a detailed explanation of death types, see https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html
+  enabled-death-type:
+    CONTACT: true
+    LAVA: true
+    CRAMMING: true
+    ENTITY_SWEEP_ATTACK: true
+    FIRE_TICK: true
+    ENTITY_EXPLOSION: true
+    WITHER: true
+    FIRE: true
+    MAGIC: true
+    PROJECTILE: true
+    CUSTOM: true
+    FALL: true
+    SUICIDE: true
+    DRAGON_BREATH: true
+    DROWNING: true
+    LIGHTNING: true
+    FALLING_BLOCK: true
+    FLY_INTO_WALL: true
+    THORNS: true
+    ENTITY_ATTACK: true
+    BLOCK_EXPLOSION: true
+    HOT_FLOOR: true
+    STARVATION: true
+    VOID: true
+    PVP: true
+    SUFFOCATION: true
+  filter-entities-list:
+    #if set to true (Blacklist mode), the inventory will NOT BE RESTORED if a player killed by the entity in the list.
+    #if set to false (Whitelist mode), the inventory will BE RESTORED if a player killed by the entity in the list.
+    is-blacklist: true
+    #To disable, leave the list empty. -> entities: []
+    #Entity name should be the namespace of minecraft.
+    #For example: MAGMA_CUBE, PLAYER, ENDER_DRAGON, ZOMBIE, ZOMBIE_VILLAGER, etc.
+    #You can find it out here: https://minecraft-ids.grahamedgecombe.com/entities
+    entities:
+      - EnderDragon
+  filter-entities-name:
+    #if set to true (Blacklist mode), the inventory will NOT BE RESTORED if a player killed by a entity which name is in the list.
+    #if set to false (Whitelist mode), the inventory will BE RESTORED if a player killed by a entity which name is in the list.
+    is-blacklist: false
+    #To disable, leave the list empty. -> names-list: []
+    names-list:
+      - 'Custom Entity Name'
+      - '&7Full name with&a color code'
+  show-death-cause-on-death: false
+  #Show the death cause of a player in console. (Debug option)
+  items-with-lore-to-be-removed-on-death:
+    #Items with this lore will get removed on death.
+    #This works if you are using SoulBind plugin that will give the item repeatedly when a player respawns.
+    - 'Soul bind item lore'
+    - '&dSoul bind'
+messages:
+  saved-inventory: '&aThe &eSaving Stick &ahave saved your inventory!!'
+  lost-exp: '&eBut you have lost &6%s1 &elevels.. Now your level is &a%s2'
+  reloaded-config: '&aConfig reloaded!'
+  received-item: '&aYou just received &dx%amount% &eSaving Stick &a!'
+  received-virtual-item: '&aYou just received &dx%amount% &eSaving Stick &a,now you have &e%total% &asticks!'
+  set-virtual-item: '&aSuccessfully set the virtual amount of player &e%p&a, now the amount is&ex%total%&a.'
+  take-virtual-item: '&aSuccessfully took &ex%amount%&a virtual item from &e%p&a,now has &ex%total%&a!'
+  give-virtual-item: '&aSuccessfully gave &ex%amount%&a vitrual item to player &e%p, &anow the total amount is &e%total% &a!'
+  modified-amount: '&eYour virtual &bSaving Stick &ehas been modified, now you have &6x%amount%.'
+  virtual-item-count: '&aYou have &dx%amount% &eSaving Stick&a!'
+  virtual-item-count-others: '&aPlayer &6%p &ahas &dx%amount% &eSaving Stick&a!'
+  no-permission: '&cYou don''t have permission to use this command!'
+  player-only: '&cOnly player can use this command!'
+  is-not-number: '&e%s &cis not a valid number!'
+  item-not-exist: '&cThe item &d%s &cdoes not exist!'
+  give-usage: '&cUse &e/invkeep give <v/p> <player> [amount]'
+  set-usage: '&cUse &e/invkeep set <player> <amount>'
+  take-usage: '&cUse &e/invkeep take <player> <amount>'
+  get-usage: '&cUse &e/invkeep get <v/p> [amount]'
+  invalid-amount: '&cInvalid amount! The number must lower than &e%s&c!'
+  player-not-found: '&cPlayer &e%s &c is offline or not found!'
+  gave-item: '&aYou gave &e%p &6x%s &aSaving Stick!'
+  help-msg:
+    - '&7----------&aInvKeeper Help&7----------'
+    - '&b /invkeep get <v/p> [amount] &7- &6Get the saving item'
+    - '&b /invkeep give <v/p> <player> [amount] &7- &6Give the saving item to a player'
+    - '&b /invkeep take <player> <amount> &7- &6Take the virtual item from a player'
+    - '&b /invkeep set <player> <amount> &7- &6Set a amount of the virtual item of a player'
+    - '&b /invkeep check [player] &7- &6Check the remaining quantity of virtual items'
+    - '&b /invkeep reload &7- &6Reload config'
+    - '  &eV -> Virtual item'
+    - '  &eP -> Physical item'
+    - '&7------------------------------------'

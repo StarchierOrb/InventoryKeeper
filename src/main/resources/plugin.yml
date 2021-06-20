@@ -1,0 +1,18 @@
+name: InventoryKeeper
+version: @version@
+main: me.starchier.inventorykeeper.InventoryKeeper
+api-version: 1.13
+authors: [starchier]
+softdepend: [PlaceholderAPI]
+description: Save players inventory
+commands:
+  invkeep:
+    usage: /invkeep help for help
+    description: Main command of InvKeeper
+permissions:
+  inventorykeeper.check:
+    default: true
+    description: Player can check the remaining quantity of virtual items.
+  inventorykeeper.admin:
+    default: op
+    description: Access all commands of InvKeeper.
