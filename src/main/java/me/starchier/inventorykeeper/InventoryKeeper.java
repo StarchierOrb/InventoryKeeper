@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 
 public final class InventoryKeeper extends JavaPlugin {
     @Override
@@ -27,11 +28,19 @@ public final class InventoryKeeper extends JavaPlugin {
         }
         File cache = new File(getDataFolder(), "skull_cache.yml");
         if (!cache.exists()) {
-            saveResource("skull_cache.yml", false);
+            try {
+                cache.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         File dataFile = new File(getDataFolder(), "data.yml");
         if (!dataFile.exists()) {
-            saveResource("data.yml", false);
+            try {
+                dataFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         ItemHandler ih = new ItemHandler(this);
         if(!ih.isItem()) {
