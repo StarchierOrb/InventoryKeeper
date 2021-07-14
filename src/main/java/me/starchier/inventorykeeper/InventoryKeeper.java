@@ -3,6 +3,7 @@ package me.starchier.inventorykeeper;
 import me.starchier.inventorykeeper.bStats.MetricsLite;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.command.CommandTab;
+import me.starchier.inventorykeeper.configurations.GeneralConfig;
 import me.starchier.inventorykeeper.events.*;
 import me.starchier.inventorykeeper.hooks.PlaceholderAPIHook;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
@@ -22,10 +23,11 @@ public final class InventoryKeeper extends JavaPlugin {
         MessagesUtil.initMessageBundle();
         getLogger().info(MessagesUtil.getMessage("server-version") + ph.getVersion() + (ph.isLegacy() ? MessagesUtil.getMessage("is-legacy") : ""));
         getLogger().info(MessagesUtil.getMessage("loading-config"));
-        File cfg = new File(getDataFolder(), "config.yml");
-        if (!cfg.exists()) {
-            saveDefaultConfig();
+        File itemsConfig = new File(getDataFolder(), "items.yml");
+        if (!itemsConfig.exists()) {
+            saveResource("items.yml", false);
         }
+        GeneralConfig.initConfig(this);
         File cache = new File(getDataFolder(), "skull_cache.yml");
         if (!cache.exists()) {
             try {
