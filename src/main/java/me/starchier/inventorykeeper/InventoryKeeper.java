@@ -73,7 +73,11 @@ public final class InventoryKeeper extends JavaPlugin {
         getLogger().info(MessagesUtil.getMessage("plugin-loaded"));
         getLogger().info(MessagesUtil.getMessage("donate-msg"));
         getLogger().info(MessagesUtil.getMessage("donate-link"));
-        MetricsLite metricsLite = new MetricsLite(this, 8286);
+        try {
+            MetricsLite metricsLite = new MetricsLite(this, 8286);
+        } catch (Throwable e) {
+            getLogger().warning(MessagesUtil.getMessage("cannot-init-metrics"));
+        }
     }
 
     @Override
