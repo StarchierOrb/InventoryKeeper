@@ -1,1 +1,29 @@
-items: [ ]
+items:
+  default:
+    enabled-death-type:
+      CONTACT: true
+      LAVA: true
+      CRAMMING: true
+      ENTITY_SWEEP_ATTACK: true
+      FIRE_TICK: true
+      ENTITY_EXPLOSION: true
+      WITHER: true
+      FIRE: true
+      MAGIC: true
+      PROJECTILE: true
+      CUSTOM: true
+      FALL: true
+      SUICIDE: true
+      DRAGON_BREATH: true
+      DROWNING: true
+      LIGHTNING: true
+      FALLING_BLOCK: true
+      FLY_INTO_WALL: true
+      THORNS: true
+      ENTITY_ATTACK: true
+      BLOCK_EXPLOSION: true
+      HOT_FLOOR: true
+      STARVATION: true
+      VOID: true
+      PVP: true
+      SUFFOCATION: true

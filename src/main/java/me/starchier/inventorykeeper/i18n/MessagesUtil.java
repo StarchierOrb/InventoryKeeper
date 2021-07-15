@@ -29,7 +29,7 @@ public class MessagesUtil {
 
     public static String[] getConfigCommit(String key) {
         try {
-            return rb.getString("commit." + key).split("\n");
+            return rb.getString("commit." + key).split("\\n");
         } catch (MissingResourceException | NullPointerException e) {
             return new String[]{"commit." + key};
         }
@@ -45,7 +45,7 @@ public class MessagesUtil {
 
     public static List<String> getConfigArrayValue(String key) {
         try {
-            return Arrays.asList(rb.getString(key).split("\n"));
+            return Arrays.asList(rb.getString(key).split("\\n"));
         } catch (MissingResourceException | NullPointerException e) {
             return Collections.singletonList(key);
         }

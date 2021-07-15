@@ -4,6 +4,7 @@ import me.starchier.inventorykeeper.bStats.MetricsLite;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.command.CommandTab;
 import me.starchier.inventorykeeper.configurations.GeneralConfig;
+import me.starchier.inventorykeeper.configurations.ItemsConfig;
 import me.starchier.inventorykeeper.events.*;
 import me.starchier.inventorykeeper.hooks.PlaceholderAPIHook;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
@@ -28,6 +29,7 @@ public final class InventoryKeeper extends JavaPlugin {
             saveResource("items.yml", false);
         }
         GeneralConfig.initConfig(this);
+        ItemsConfig.initItemsConfig(this, ph);
         File cache = new File(getDataFolder(), "skull_cache.yml");
         if (!cache.exists()) {
             try {
