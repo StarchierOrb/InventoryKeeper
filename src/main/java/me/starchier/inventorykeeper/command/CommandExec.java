@@ -18,7 +18,7 @@ public class CommandExec {
         this.plugin = plugin;
     }
     public void doKeepModInventory(Player player) {
-        String value = pluginHandler.getSettings("galacticraft-mod-support");
+        String value = pluginHandler.getConfigValue("galacticraft-mod-support");
         if(value==null) {
             return;
         }
@@ -27,7 +27,7 @@ public class CommandExec {
         }
     }
     public void doRestoreModInventory(Player player) {
-        String value = pluginHandler.getSettings("galacticraft-mod-support");
+        String value = pluginHandler.getConfigValue("galacticraft-mod-support");
         if(value==null) {
             return;
         }

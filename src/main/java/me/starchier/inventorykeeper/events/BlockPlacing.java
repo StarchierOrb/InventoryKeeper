@@ -21,14 +21,14 @@ public class BlockPlacing implements Listener {
             return;
         }
         try {
-            if (itemHandler.getSaveItem().isSimilar(evt.getItemInHand())) {
+            if (itemHandler.buildItem().isSimilar(evt.getItemInHand())) {
                 evt.setBuild(false);
             }
         } catch(Exception e) {
-            ItemMeta item = itemHandler.getSaveItem().getItemMeta();
+            ItemMeta item = itemHandler.buildItem().getItemMeta();
             ItemMeta target = evt.getItemInHand().getItemMeta();
-            if(item.getDisplayName().equals(target.getDisplayName()) &&item.getLore().equals(target.getLore())&&
-                    itemHandler.getSaveItem().getType().equals(evt.getItemInHand().getType())) {
+            if (item.getDisplayName().equals(target.getDisplayName()) && item.getLore().equals(target.getLore()) &&
+                    itemHandler.buildItem().getType().equals(evt.getItemInHand().getType())) {
                 evt.setBuild(false);
             }
         }

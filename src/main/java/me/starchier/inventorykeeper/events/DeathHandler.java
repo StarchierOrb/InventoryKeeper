@@ -9,16 +9,13 @@ import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
 import java.util.Locale;
 
 public class DeathHandler implements Listener {
@@ -67,15 +64,15 @@ public class DeathHandler implements Listener {
                 //isSet = true;
             } else if(ph.getBoolCfg("enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString())) {
                 if(PlayerStorage.getKiller(evt.getEntity()).contains("|")) {
-                    boolean entityStat = ph.getStatByEntity(PlayerStorage.getKiller(evt.getEntity()));
-                    boolean nameStat = ph.getStatByName(PlayerStorage.getKiller(evt.getEntity()));
-                    if(ph.isBlackList(false)) {
+                    boolean entityStat = ph.passConditionEntity(PlayerStorage.getKiller(evt.getEntity()));
+                    boolean nameStat = ph.passConditionEntityName(PlayerStorage.getKiller(evt.getEntity()));
+                    if (ph.isBlackList(false)) {
                         isDisabled = !(entityStat && nameStat);
                     } else {
                         isDisabled = !nameStat;
                     }
                 } else {
-                    isDisabled = !ph.getStatByEntity(PlayerStorage.getKiller(evt.getEntity()));
+                    isDisabled = !ph.passConditionEntity(PlayerStorage.getKiller(evt.getEntity()));
                 }
             } else {
                 isDisabled = true;
@@ -88,29 +85,29 @@ public class DeathHandler implements Listener {
         PlayerStorage.removeKiller(evt.getEntity());
         PlayerStorage.clearPlayer(evt.getEntity());
         if(!isDisabled) {
-            boolean clearVanish = ph.getSettings("clear-vanishing-curse-items").equalsIgnoreCase("true")||
-                    ph.getSettings("clear-vanishing-curse-items")==null;
-            boolean dropBinding = ph.getSettings("drop-binding-curse-items").equalsIgnoreCase("true");
+            boolean clearVanish = ph.getConfigValue("clear-vanishing-curse-items").equalsIgnoreCase("true") ||
+                    ph.getConfigValue("clear-vanishing-curse-items") == null;
+            boolean dropBinding = ph.getConfigValue("drop-binding-curse-items").equalsIgnoreCase("true");
             ItemHandler ih = new ItemHandler(plugin);
-            boolean hasItem =false;
-            if(evt.getEntity().hasPermission("inventorykeeper.keep")) {
+            boolean hasItem = false;
+            if (evt.getEntity().hasPermission("inventorykeeper.keep")) {
                 hasItem = true;
             }
-            if(!hasItem) {
+            if (!hasItem) {
                 for (int i = 0; i < evt.getEntity().getInventory().getSize(); i++) {
                     if (evt.getEntity().getInventory().getItem(i) == null) {
                         continue;
                     }
                     try {
-                        if (evt.getEntity().getInventory().getItem(i).isSimilar(ih.getSaveItem())) {
+                        if (evt.getEntity().getInventory().getItem(i).isSimilar(ih.buildItem())) {
                             hasItem = true;
                             break;
                         }
                     } catch (Exception e) {
-                        ItemMeta item = ih.getSaveItem().getItemMeta();
+                        ItemMeta item = ih.buildItem().getItemMeta();
                         ItemMeta target = evt.getEntity().getInventory().getItem(i).getItemMeta();
                         if (item.getDisplayName().equals(target.getDisplayName()) && item.getLore().equals(target.getLore()) &&
-                                ih.getSaveItem().getType().equals(evt.getEntity().getInventory().getItem(i).getType())) {
+                                ih.buildItem().getType().equals(evt.getEntity().getInventory().getItem(i).getType())) {
                             hasItem = true;
                             break;
                         }
@@ -187,7 +184,7 @@ public class DeathHandler implements Listener {
                         i++;
                     }
                 }
-                evt.getEntity().sendMessage(ph.getMsg("saved-inventory"));
+                evt.getEntity().sendMessage(ph.getMessage("saved-inventory"));
                 if (ph.getCfg().getBoolean("settings.save-exp")) {
                     evt.setKeepLevel(true);
                     evt.setDroppedExp(0);
@@ -196,7 +193,7 @@ public class DeathHandler implements Listener {
                     evt.setDroppedExp(0);
                     ExpHandler eh = new ExpHandler(plugin);
                     lost = eh.loseExp(evt);
-                    evt.getEntity().sendMessage(ph.getMsg("lost-exp").replace("%s1", String.valueOf(lost)).replace("%s2", String.valueOf(evt.getEntity().getLevel() - lost)));
+                    evt.getEntity().sendMessage(ph.getMessage("lost-exp").replace("%s1", String.valueOf(lost)).replace("%s2", String.valueOf(evt.getEntity().getLevel() - lost)));
                 }
                 return;
             }

@@ -3,8 +3,8 @@ package me.starchier.inventorykeeper.util;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.starchier.inventorykeeper.InventoryKeeper;
+import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
@@ -12,83 +12,83 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class ItemHandler {
     private InventoryKeeper plugin;
+    private PluginHandler pluginHandler;
 
     public ItemHandler(InventoryKeeper plugin) {
         this.plugin = plugin;
     }
 
-    public boolean isItem() {
+    public boolean isItem(String name) {
         PluginHandler ph = new PluginHandler(plugin);
-        return Material.matchMaterial(ph.getSettings("keep-inventory-item.item-id").split(":")[0]) != null;
+        return Material.matchMaterial(ph.getConfigValue(name + ".item-id", false).split(":")[0]) != null;
     }
 
-    public void validEnchant() {
+    public void validEnchant(String name) {
         PluginHandler ph = new PluginHandler(plugin);
-        if (ph.isLegacy()) {
-            for (String s : ph.getList("settings.keep-inventory-item.item-enchantments")) {
+        if (PluginHandler.IS_LEGACY) {
+            for (String s : ph.getList(name + ".item-enchantments", false)) {
                 if (Enchantment.getByName(s.split("-")[0].toUpperCase()) == null) {
-                    plugin.getLogger().warning(new StringBuilder().append("Enchantment ").append(s.split("-")[0]).append(" is not valid!").toString());
+                    plugin.getLogger().warning(String.format(MessagesUtil.getMessage("invalid-enchantment"), s.split("-")[0], name));
                 }
             }
         } else {
-            for (String s : ph.getList("settings.keep-inventory-item.item-enchantments")) {
+            for (String s : ph.getList(name + ".item-enchantments", false)) {
                 EnchantmentWrapper enchantmentWrapper;
                 try {
                     enchantmentWrapper = new EnchantmentWrapper(s.split("-")[0].toLowerCase());
                     ItemStack temp = new ItemStack(Material.STICK);
                     temp.addUnsafeEnchantment(enchantmentWrapper.getEnchantment(), 1);
                 } catch (Exception e) {
-                    plugin.getLogger().severe(new StringBuilder().append("Enchantment ").append(s.split("-")[0]).append(" is not valid!").toString());
+                    plugin.getLogger().warning(String.format(MessagesUtil.getMessage("invalid-enchantment"), s.split("-")[0], name));
                 }
             }
         }
     }
 
-    public boolean isSkull() {
+    public boolean isSkull(String name) {
         PluginHandler pluginHandler = new PluginHandler(plugin);
-        try {
-            pluginHandler.getSettings("keep-inventory-item.custom-texture");
-        } catch (Exception e) {
+        String skullTexture = getSkullTexture(name);
+        if (skullTexture == null) {
             return false;
         }
-        if (pluginHandler.isLegacy()) {
-            if (pluginHandler.getSettings("keep-inventory-item.item-id").contains(":")) {
-                return pluginHandler.getSettings("keep-inventory-item.item-id").equals("397:3") ||
-                        pluginHandler.getSettings("keep-inventory-item.item-id").equalsIgnoreCase("skull_item:3");
+        if (PluginHandler.IS_LEGACY) {
+            String itemID = pluginHandler.getConfigValue(name + ".item-id", false);
+            if (itemID.contains(":")) {
+                return itemID.equals("397:3") || itemID.equalsIgnoreCase("skull_item:3");
             }
         } else {
-            return Material.matchMaterial(pluginHandler.getSettings("keep-inventory-item.item-id")) == Material.PLAYER_HEAD;
+            return Material.matchMaterial(pluginHandler.getConfigValue(name + ".item-id", false)) == Material.PLAYER_HEAD;
         }
         return false;
     }
 
-    public String getCustomText() {
+    public String getSkullTexture(String name) {
         PluginHandler pluginHandler = new PluginHandler(plugin);
         try {
-            return pluginHandler.getSettings("keep-inventory-item.custom-texture");
+            return pluginHandler.getConfigValue(name + ".custom-texture", false);
         } catch (Exception e) {
             return null;
         }
     }
 
-    public void cacheSkull() {
-        if (isSkull()) {
+    public void cacheSkull(String name) {
+        if (isSkull(name)) {
             File cache = new File(plugin.getDataFolder(), "skull_cache.yml");
-            YamlConfiguration cacheData = YamlConfiguration.loadConfiguration(cache);
             PluginHandler ph = new PluginHandler(plugin);
-            String base = ph.getSettings("keep-inventory-item.custom-texture");
-            String skull = cacheData.getString("cache.skull", null);
+            String base = getSkullTexture(name);
+            String skull = ph.skullCache.getString("cache." + name + ".skull", null);
             if (base != null) {
                 if (skull == null || !Objects.equals(base, skull)) {
-                    cacheData.set("cache.skull", base);
-                    cacheData.set("cache.uuid", UUID.randomUUID().toString());
+                    ph.skullCache.set("cache." + name + ".skull", base);
+                    ph.skullCache.set("cache." + name + ".uuid", UUID.randomUUID().toString());
                     try {
-                        cacheData.save(cache);
+                        ph.skullCache.save(cache);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -97,9 +97,9 @@ public class ItemHandler {
         }
     }
 
-    public ItemStack getSaveItem() {
+    public ItemStack buildItem(String name) {
         PluginHandler ph = new PluginHandler(plugin);
-        String id = ph.getSettings("keep-inventory-item.item-id");
+        String id = ph.getConfigValue(name + ".item-id", false);
         ItemStack item;
         if (id.contains(":")) {
             item = new ItemStack(Material.matchMaterial(id.split(":")[0]), 1, Short.parseShort(id.split(":")[1]));
@@ -107,18 +107,22 @@ public class ItemHandler {
             item = new ItemStack(Material.matchMaterial(id.split(":")[0]));
         }
         ItemMeta data = item.getItemMeta();
-        data.setDisplayName(ph.getSettings("keep-inventory-item.item-name"));
-        data.setLore(ph.getList("settings.keep-inventory-item.item-lore"));
-        if (!ph.isLegacy()) {
-            int model = ph.getCfg().getInt("settings.keep-inventory-item.custom-model-data", -1);
+        String displayName = ph.getConfigValue(name + ".item-name", false);
+        if (displayName != null) {
+            data.setDisplayName(displayName);
+        }
+        List<String> itemLore = ph.getList(name + ".item-lore", false);
+        if (!itemLore.isEmpty()) {
+            data.setLore(itemLore);
+        }
+        if (!PluginHandler.IS_LEGACY) {
+            int model = ph.itemsConfig.getInt("items." + name + ".custom-model-data", -1);
             if (model != -1) data.setCustomModelData(model);
         }
-        if (isSkull()) {
-            File cache = new File(plugin.getDataFolder(), "skull_cache.yml");
-            YamlConfiguration cacheData = YamlConfiguration.loadConfiguration(cache);
-            UUID skullUUID = UUID.fromString(cacheData.getString("cache.uuid"));
+        if (isSkull(name)) {
+            UUID skullUUID = UUID.fromString(ph.skullCache.getString("cache." + name + ".uuid"));
             GameProfile profile = new GameProfile(skullUUID, null);
-            profile.getProperties().put("textures", new Property("textures", getCustomText()));
+            profile.getProperties().put("textures", new Property("textures", getSkullTexture(name)));
             Field profileField;
             try {
                 profileField = data.getClass().getDeclaredField("profile");
@@ -129,22 +133,23 @@ public class ItemHandler {
             }
         }
         item.setItemMeta(data);
-        if (!ph.isEmpty("keep-inventory-item.item-enchantments")) {
-            if (ph.isLegacy()) {
-                for (String s : ph.getList("settings.keep-inventory-item.item-enchantments")) {
+        List<String> enchantments = ph.getList(name + "item-enchantments", false);
+        if (!enchantments.isEmpty()) {
+            if (PluginHandler.IS_LEGACY) {
+                for (String s : enchantments) {
                     if (Enchantment.getByName(s.split("-")[0].toUpperCase()) == null) {
                         continue;
                     }
                     item.addUnsafeEnchantment(Enchantment.getByName(s.split("-")[0].toUpperCase()), Integer.parseInt(s.split("-")[1]));
                 }
             } else {
-                for (String s : ph.getList("settings.keep-inventory-item.item-enchantments")) {
+                for (String s : enchantments) {
                     EnchantmentWrapper enchantmentWrapper;
                     try {
                         enchantmentWrapper = new EnchantmentWrapper(s.split("-")[0].toLowerCase());
                         item.addUnsafeEnchantment(enchantmentWrapper.getEnchantment(),
                                 Integer.parseInt(s.split("-")[1]));
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                     }
                 }
             }

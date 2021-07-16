@@ -46,9 +46,10 @@ public final class InventoryKeeper extends JavaPlugin {
                 e.printStackTrace();
             }
         }
+        ph.initConfigCache();
         ItemHandler ih = new ItemHandler(this);
         if(!ih.isItem()) {
-            getLogger().severe(String.format(MessagesUtil.getMessage("item-not-valid"), ph.getSettings("keep-inventory-item.item-id")));
+            getLogger().severe(String.format(MessagesUtil.getMessage("item-not-valid"), ph.getConfigValue("keep-inventory-item.item-id")));
             getLogger().severe(MessagesUtil.getMessage("replace-not-valid-item"));
             ph.getCfg().set("settings.keep-inventory-item.item-id", "STICK");
         }

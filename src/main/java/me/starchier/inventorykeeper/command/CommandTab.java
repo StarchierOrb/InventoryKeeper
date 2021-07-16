@@ -33,7 +33,7 @@ public class CommandTab implements TabExecutor {
         if(cmd.getName().equalsIgnoreCase("invkeep")) {
             PluginHandler ph = new PluginHandler(plugin);
             if(sender instanceof Player && (!playerPerm(sender) && !sender.hasPermission("inventorykeeper.admin"))) {
-                sender.sendMessage(ph.getMsg("no-permission"));
+                sender.sendMessage(ph.getMessage("no-permission"));
                 return true;
             }
             if(args.length<1&&playerPerm(sender)) {
@@ -43,22 +43,22 @@ public class CommandTab implements TabExecutor {
                 return true;
             }
             if(args.length>0&&!sender.hasPermission("inventorykeeper.admin")&&!args[0].equalsIgnoreCase("check")&&sender instanceof Player) {
-                sender.sendMessage(ph.getMsg("no-permission"));
+                sender.sendMessage(ph.getMessage("no-permission"));
                 return true;
             }
             CommandHandler commandHandler = new CommandHandler(plugin);
             if(!sender.hasPermission("inventorykeeper.admin")&&sender instanceof Player&&args[0].equalsIgnoreCase("check")) {
                 if(args.length<2) {
-                    sender.sendMessage(ph.getMsg("virtual-item-count").replace("%amount%", String.valueOf(dataManager.getVirtualCount((Player)sender))));
+                    sender.sendMessage(ph.getMessage("virtual-item-count").replace("%amount%", String.valueOf(dataManager.getVirtualCount((Player) sender))));
                     return true;
                 }
                 if(sender.hasPermission(advPerm)) {
                     Player target = commandHandler.findPlayer(args[1]);
                     if(target==null) {
-                        sender.sendMessage(ph.getMsg("player-not-found").replace("%s", args[1]));
+                        sender.sendMessage(ph.getMessage("player-not-found").replace("%s", args[1]));
                         return true;
                     }
-                    sender.sendMessage(ph.getMsg("virtual-item-count-others").replace("%amount%", String.valueOf(dataManager.getVirtualCount(target)))
+                    sender.sendMessage(ph.getMessage("virtual-item-count-others").replace("%amount%", String.valueOf(dataManager.getVirtualCount(target)))
                             .replace("%p", target.getName()));
                 }
                 return true;
@@ -69,7 +69,7 @@ public class CommandTab implements TabExecutor {
                     plugin.reloadConfig();
                     ItemHandler ih = new ItemHandler(plugin);
                     if(!ih.isItem()) {
-                        plugin.getLogger().severe("Item "+ph.getSettings("keep-inventory-item.item-id") + " is not valid!");
+                        plugin.getLogger().severe("Item " + ph.getConfigValue("keep-inventory-item.item-id") + " is not valid!");
                         plugin.getLogger().severe("The item will be replaced to STICK!");
                         ph.getCfg().set("settings.keep-inventory-item.item-id", "STICK");
                     }
@@ -77,16 +77,16 @@ public class CommandTab implements TabExecutor {
                     ih.cacheSkull();
                     plugin.getLogger().info("Reloading player data...");
                     dataManager.reloadData();
-                    sender.sendMessage(ph.getMsg("reloaded-config"));
+                    sender.sendMessage(ph.getMessage("reloaded-config"));
                     return true;
                 }
                 case "get": {
                     if(!(sender instanceof Player)) {
-                        sender.sendMessage(ph.getMsg("player-only"));
+                        sender.sendMessage(ph.getMessage("player-only"));
                         return true;
                     }
                     if(args.length<2||args.length>3) {
-                        sender.sendMessage(ph.getMsg("get-usage"));
+                        sender.sendMessage(ph.getMessage("get-usage"));
                         return true;
                     }
                     switch (args[1]) {
@@ -98,40 +98,40 @@ public class CommandTab implements TabExecutor {
                                     count = Integer.parseInt(args[2]);
                                 } else {
                                     count = 1;
-                                    sender.sendMessage(ph.getMsg("is-not-number").replace("%s", args[2]));
+                                    sender.sendMessage(ph.getMessage("is-not-number").replace("%s", args[2]));
                                 }
                             }
                             int total = dataManager.addVirtual((Player) sender, count);
-                            sender.sendMessage(ph.getMsg("received-virtual-item").replace("%amount%",String.valueOf(count)
-                                    ).replace("%total%",String.valueOf(total)));
+                            sender.sendMessage(ph.getMessage("received-virtual-item").replace("%amount%", String.valueOf(count)
+                            ).replace("%total%", String.valueOf(total)));
                             return true;
                         }
                         default: {
                             ItemHandler ih = new ItemHandler(plugin);
                             if(!ih.isItem()) {
-                                sender.sendMessage(ph.getMsg("item-not-exist").replace("%s",ph.getSettings("keep-inventory-item.item-id")));
+                                sender.sendMessage(ph.getMessage("item-not-exist").replace("%s", ph.getConfigValue("keep-inventory-item.item-id")));
                                 return true;
                             }
-                            ItemStack item = ih.getSaveItem();
+                            ItemStack item = ih.buildItem();
                             if(args.length>=3) {
                                 if(ph.isNumber(args[2])) {
                                     item.setAmount(Integer.parseInt(args[2]));
                                 } else {
-                                    sender.sendMessage(ph.getMsg("is-not-number").replace("%s",args[2]));
+                                    sender.sendMessage(ph.getMessage("is-not-number").replace("%s", args[2]));
                                     item.setAmount(1);
                                 }
                             } else {
                                 item.setAmount(1);
                             }
                             ((Player) sender).getPlayer().getWorld().dropItem(((Player) sender).getLocation(), item);
-                            sender.sendMessage(ph.getMsg("received-item").replace("%amount%", String.valueOf(item.getAmount())));
+                            sender.sendMessage(ph.getMessage("received-item").replace("%amount%", String.valueOf(item.getAmount())));
                             return true;
                         }
                     }
                 }
                 case "give": {
                     if(args.length<3||args.length>4) {
-                        sender.sendMessage(ph.getMsg("give-usage"));
+                        sender.sendMessage(ph.getMessage("give-usage"));
                         return true;
                     }
                     switch(args[1]) {
@@ -142,20 +142,20 @@ public class CommandTab implements TabExecutor {
                                 if(ph.isNumber(args[3])) {
                                     count=Integer.parseInt(args[3]);
                                 } else {
-                                    count=1;
-                                    sender.sendMessage(ph.getMsg("is-not-number").replace("%s",args[3]));
+                                    count = 1;
+                                    sender.sendMessage(ph.getMessage("is-not-number").replace("%s", args[3]));
                                 }
                             }
                             Player target = commandHandler.findPlayer(args[2]);
                             if(target!=null) {
                                 int total = dataManager.addVirtual(target, count);
-                                sender.sendMessage(ph.getMsg("give-virtual-item").replace("%total%", String.valueOf(total))
-                                        .replace("%p",args[2]).replace("%amount%",String.valueOf(count)));
-                                target.sendMessage(ph.getMsg("received-virtual-item").replace("%amount%",String.valueOf(count)
-                                        ).replace("%total%",String.valueOf(total)));
+                                sender.sendMessage(ph.getMessage("give-virtual-item").replace("%total%", String.valueOf(total))
+                                        .replace("%p", args[2]).replace("%amount%", String.valueOf(count)));
+                                target.sendMessage(ph.getMessage("received-virtual-item").replace("%amount%", String.valueOf(count)
+                                ).replace("%total%", String.valueOf(total)));
                                 return true;
                             }
-                            sender.sendMessage(ph.getMsg("player-not-found").replace("%s", args[2]));
+                            sender.sendMessage(ph.getMessage("player-not-found").replace("%s", args[2]));
                             return true;
                         }
                         default: {
@@ -168,59 +168,59 @@ public class CommandTab implements TabExecutor {
                 case "check": {
                     if(args.length<2) {
                         if(!(sender instanceof Player)) {
-                            sender.sendMessage(ph.getMsg("player-only"));
+                            sender.sendMessage(ph.getMessage("player-only"));
                             return true;
                         }
-                        sender.sendMessage(ph.getMsg("virtual-item-count").replace("%amount%", String.valueOf(dataManager.getVirtualCount((Player) sender))));
+                        sender.sendMessage(ph.getMessage("virtual-item-count").replace("%amount%", String.valueOf(dataManager.getVirtualCount((Player) sender))));
                         return true;
                     }
                     Player target = commandHandler.findPlayer(args[1]);
                     if(target==null) {
-                        sender.sendMessage(ph.getMsg("player-not-found").replace("%s", args[1]));
+                        sender.sendMessage(ph.getMessage("player-not-found").replace("%s", args[1]));
                         return true;
                     }
-                    sender.sendMessage(ph.getMsg("virtual-item-count-others").replace("%amount%", String.valueOf(dataManager.getVirtualCount(target)))
+                    sender.sendMessage(ph.getMessage("virtual-item-count-others").replace("%amount%", String.valueOf(dataManager.getVirtualCount(target)))
                             .replace("%p", target.getName()));
                     return true;
                 }
                 case "set": {
                     if(args.length!=3) {
-                        sender.sendMessage(ph.getMsg("set-usage"));
+                        sender.sendMessage(ph.getMessage("set-usage"));
                         return true;
                     }
                     if(!ph.isNumber(args[2])) {
-                        sender.sendMessage(ph.getMsg("is-not-number").replace("%s",args[2]));
+                        sender.sendMessage(ph.getMessage("is-not-number").replace("%s", args[2]));
                         return true;
                     }
                     Player target = commandHandler.findPlayer(args[1]);
                     if(target!=null) {
                         int a = dataManager.setVirtual(target, Integer.parseInt(args[2]));
-                        sender.sendMessage(ph.getMsg("set-virtual-item").replace("%total%", String.valueOf(a))
-                                .replace("%p",args[1]));
-                        target.sendMessage(ph.getMsg("modified-amount").replace("%amount%",String.valueOf(a)));
+                        sender.sendMessage(ph.getMessage("set-virtual-item").replace("%total%", String.valueOf(a))
+                                .replace("%p", args[1]));
+                        target.sendMessage(ph.getMessage("modified-amount").replace("%amount%", String.valueOf(a)));
                         return true;
                     }
-                    sender.sendMessage(ph.getMsg("player-not-found").replace("%s", args[1]));
+                    sender.sendMessage(ph.getMessage("player-not-found").replace("%s", args[1]));
                     return true;
                 }
                 case "take": {
                     if(args.length!=3) {
-                        sender.sendMessage(ph.getMsg("take-usage"));
+                        sender.sendMessage(ph.getMessage("take-usage"));
                         return true;
                     }
                     if(!ph.isNumber(args[2])) {
-                        sender.sendMessage(ph.getMsg("is-not-number").replace("%s",args[2]));
+                        sender.sendMessage(ph.getMessage("is-not-number").replace("%s", args[2]));
                         return true;
                     }
                     Player target = commandHandler.findPlayer(args[1]);
                     if(target!=null) {
                         int a = dataManager.takeVirtual(target, Integer.parseInt(args[2]));
-                        sender.sendMessage(ph.getMsg("take-virtual-item").replace("%amount%", args[2])
-                                .replace("%total%",String.valueOf(a)).replace("%p", args[1]));
-                        target.sendMessage(ph.getMsg("modified-amount").replace("%amount%",String.valueOf(a)));
+                        sender.sendMessage(ph.getMessage("take-virtual-item").replace("%amount%", args[2])
+                                .replace("%total%", String.valueOf(a)).replace("%p", args[1]));
+                        target.sendMessage(ph.getMessage("modified-amount").replace("%amount%", String.valueOf(a)));
                         return true;
                     }
-                    sender.sendMessage(ph.getMsg("player-not-found").replace("%s", args[1]));
+                    sender.sendMessage(ph.getMessage("player-not-found").replace("%s", args[1]));
                     return true;
                 }
                 default: {

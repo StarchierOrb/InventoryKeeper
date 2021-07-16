@@ -55,15 +55,15 @@ public class RespawnHandler implements Listener {
                 continue;
             }
             try {
-                if (evt.getPlayer().getInventory().getItem(i).isSimilar(ih.getSaveItem())) {
+                if (evt.getPlayer().getInventory().getItem(i).isSimilar(ih.buildItem())) {
                     hasItem = true;
                     break;
                 }
             } catch (Exception e) {
-                ItemMeta itemMeta = ih.getSaveItem().getItemMeta();
+                ItemMeta itemMeta = ih.buildItem().getItemMeta();
                 ItemMeta target = evt.getPlayer().getInventory().getItem(i).getItemMeta();
-                if(itemMeta.getDisplayName().equals(target.getDisplayName()) &&itemMeta.getLore().equals(target.getLore())&&
-                        ih.getSaveItem().getType().equals(evt.getPlayer().getInventory().getItem(i).getType())) {
+                if (itemMeta.getDisplayName().equals(target.getDisplayName()) && itemMeta.getLore().equals(target.getLore()) &&
+                        ih.buildItem().getType().equals(evt.getPlayer().getInventory().getItem(i).getType())) {
                     hasItem = true;
                     break;
                 }
@@ -72,7 +72,7 @@ public class RespawnHandler implements Listener {
         if(PlayerStorage.isConsumed(evt.getPlayer())) {
             if (hasItem) {
                 if (evt.getPlayer().getInventory().getItem(i).getAmount() > 1) {
-                    ItemStack item = ih.getSaveItem();
+                    ItemStack item = ih.buildItem();
                     item.setAmount(evt.getPlayer().getInventory().getItem(i).getAmount() - 1);
                     evt.getPlayer().getInventory().setItem(i, item);
                 } else {

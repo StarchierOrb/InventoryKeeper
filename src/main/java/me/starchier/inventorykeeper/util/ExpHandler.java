@@ -1,7 +1,6 @@
 package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Random;
@@ -13,7 +12,7 @@ public class ExpHandler {
     }
     public int loseExp(PlayerDeathEvent evt) {
         PluginHandler ph = new PluginHandler(plugin);
-        String amount = ph.getSettings("exp-lose-percentage").replace("%","").replace("L","");
+        String amount = ph.getConfigValue("exp-lose-percentage").replace("%", "").replace("L", "");
         if(amount.contains("-")) {
             String[] random = amount.split("-");
             Random r = new Random();

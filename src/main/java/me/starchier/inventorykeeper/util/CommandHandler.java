@@ -23,27 +23,27 @@ public class CommandHandler {
         PluginHandler ph = new PluginHandler(plugin);
         Player target = findPlayer(args[2]);
         if(target==null) {
-            sender.sendMessage(ph.getMsg("player-not-found").replace("%s", args[2]));
+            sender.sendMessage(ph.getMessage("player-not-found").replace("%s", args[2]));
             return;
         }
         ItemHandler ih = new ItemHandler(plugin);
         if(!ih.isItem()) {
-            sender.sendMessage(ph.getMsg("item-not-exist").replace("%s",ph.getSettings("keep-inventory-item.item-id")));
+            sender.sendMessage(ph.getMessage("item-not-exist").replace("%s", ph.getConfigValue("keep-inventory-item.item-id")));
             return;
         }
-        ItemStack item = ih.getSaveItem();
+        ItemStack item = ih.buildItem();
         if(args.length>=4) {
-            if(ph.isNumber(args[3])) {
+            if (ph.isNumber(args[3])) {
                 item.setAmount(Integer.parseInt(args[3]));
             } else {
-                sender.sendMessage(ph.getMsg("is-not-number").replace("%s",args[3]));
+                sender.sendMessage(ph.getMessage("is-not-number").replace("%s", args[3]));
                 item.setAmount(1);
             }
         } else {
             item.setAmount(1);
         }
         target.getWorld().dropItem(target.getLocation(), item);
-        sender.sendMessage(ph.getMsg("gave-item").replace("%s", String.valueOf(item.getAmount())).replace("%p",target.getDisplayName()));
-        target.sendMessage(ph.getMsg("received-item").replace("%amount%", String.valueOf(item.getAmount())));
+        sender.sendMessage(ph.getMessage("gave-item").replace("%s", String.valueOf(item.getAmount())).replace("%p", target.getDisplayName()));
+        target.sendMessage(ph.getMessage("received-item").replace("%amount%", String.valueOf(item.getAmount())));
     }
 }
