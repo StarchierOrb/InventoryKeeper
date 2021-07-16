@@ -34,8 +34,8 @@ public class DeathHandler implements Listener {
         PluginHandler ph = new PluginHandler(plugin);
         int lost=0;
         boolean isDisabled = false, keepInv=false;
-        for(String s: ph.getDisableWorlds()) {
-            if(evt.getEntity().getWorld().getName().equalsIgnoreCase(s)) {
+        for (String s : ph.getDisabledWorlds()) {
+            if (evt.getEntity().getWorld().getName().equalsIgnoreCase(s)) {
                 isDisabled = true;
                 break;
             }

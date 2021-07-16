@@ -118,7 +118,7 @@ public class PluginHandler {
         return p.matcher(s).matches();
     }
 
-    public List<String> getDisableWorlds(String itemGroup) {
+    public List<String> getDisabledWorlds(String itemGroup) {
         return getList(itemGroup + ".disabled-worlds", false);
     }
 }

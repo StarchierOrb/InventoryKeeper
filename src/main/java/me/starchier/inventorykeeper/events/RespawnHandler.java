@@ -28,8 +28,8 @@ public class RespawnHandler implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent evt) {
         ItemHandler ih = new ItemHandler(plugin);
-        for(String s : ph.getDisableWorlds()) {
-            if(evt.getPlayer().getWorld().getName().equals(s)) {
+        for (String s : ph.getDisabledWorlds()) {
+            if (evt.getPlayer().getWorld().getName().equals(s)) {
                 return;
             }
         }
