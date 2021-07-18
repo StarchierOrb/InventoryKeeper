@@ -191,7 +191,7 @@ public class DeathHandler implements Listener {
                 } else {
                     evt.setKeepLevel(false);
                     evt.setDroppedExp(0);
-                    ExpHandler eh = new ExpHandler(plugin);
+                    ExpHandler eh = new ExpHandler();
                     lost = eh.loseExp(evt);
                     evt.getEntity().sendMessage(ph.getMessage("lost-exp").replace("%s1", String.valueOf(lost)).replace("%s2", String.valueOf(evt.getEntity().getLevel() - lost)));
                 }

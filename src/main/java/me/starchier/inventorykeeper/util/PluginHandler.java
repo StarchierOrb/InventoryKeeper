@@ -95,7 +95,7 @@ public class PluginHandler {
     }
 
     public String getMessage(String path) {
-        return plugin.getConfig().getString("messages." + path, null).replace("&", "§");
+        return ChatColor.translateAlternateColorCodes('&', generalConfig.getString("messages." + path, null));
     }
 
     public List<String> getList(String path, boolean isGeneralConfig) {
@@ -122,11 +122,21 @@ public class PluginHandler {
         if (currentItems != null) {
             currentItems = null;
         }
+        //TODO verify if the material exists.
         Set<String> itemKeys = itemsConfig.getConfigurationSection("items").getKeys(false);
         for (String key : itemKeys) {
             currentItems.add(new ItemBase(key, itemHandler, this));
             plugin.getLogger().info(String.format(MessagesUtil.getMessage("loaded-item"), key));
         }
+    }
+
+    public ItemBase getItemBase(String name) {
+        for (ItemBase item : currentItems) {
+            if (item.getName().equals(name)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public List<String> getDisabledWorlds(String itemGroup) {
