@@ -1,6 +1,5 @@
 package me.starchier.inventorykeeper.storage;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -21,10 +20,9 @@ public class PlayerStorage {
         deathType.remove(player);
     }
     public static EntityDamageEvent.DamageCause getDeathCause(Player player) {
-        Set<Map.Entry<Player, EntityDamageEvent.DamageCause>> p = deathType.entrySet();
-        for (Map.Entry entry : p) {
-            if(entry.getKey()==player) {
-                return (EntityDamageEvent.DamageCause) entry.getValue();
+        for (Map.Entry<Player, EntityDamageEvent.DamageCause> entry : deathType.entrySet()) {
+            if (entry.getKey() == player) {
+                return entry.getValue();
             }
         }
         //Should not reach here.
@@ -51,10 +49,9 @@ public class PlayerStorage {
         return getKiller(player)!=null;
     }
     public static boolean isConsumed(Player player) {
-        Set<Map.Entry<Player, Boolean>> p = consumeMap.entrySet();
-        for (Map.Entry entry : p) {
-            if(entry.getKey()==player) {
-                return (boolean)entry.getValue();
+        for (Map.Entry<Player, Boolean> entry : consumeMap.entrySet()) {
+            if (entry.getKey() == player) {
+                return entry.getValue();
             }
         }
         return true;
