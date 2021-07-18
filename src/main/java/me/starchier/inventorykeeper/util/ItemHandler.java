@@ -17,28 +17,27 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ItemHandler {
-    private InventoryKeeper plugin;
-    private PluginHandler pluginHandler;
+    private final InventoryKeeper plugin;
+    private final PluginHandler pluginHandler;
 
-    public ItemHandler(InventoryKeeper plugin) {
+    public ItemHandler(InventoryKeeper plugin, PluginHandler pluginHandler) {
         this.plugin = plugin;
+        this.pluginHandler = pluginHandler;
     }
 
     public boolean isItem(String name) {
-        PluginHandler ph = new PluginHandler(plugin);
-        return Material.matchMaterial(ph.getConfigValue(name + ".item-id", false).split(":")[0]) != null;
+        return Material.matchMaterial(pluginHandler.getConfigValue(name + ".item-id", false).split(":")[0]) != null;
     }
 
     public void validEnchant(String name) {
-        PluginHandler ph = new PluginHandler(plugin);
         if (PluginHandler.IS_LEGACY) {
-            for (String s : ph.getList(name + ".item-enchantments", false)) {
+            for (String s : pluginHandler.getList(name + ".item-enchantments", false)) {
                 if (Enchantment.getByName(s.split("-")[0].toUpperCase()) == null) {
                     plugin.getLogger().warning(String.format(MessagesUtil.getMessage("invalid-enchantment"), s.split("-")[0], name));
                 }
             }
         } else {
-            for (String s : ph.getList(name + ".item-enchantments", false)) {
+            for (String s : pluginHandler.getList(name + ".item-enchantments", false)) {
                 EnchantmentWrapper enchantmentWrapper;
                 try {
                     enchantmentWrapper = new EnchantmentWrapper(s.split("-")[0].toLowerCase());
@@ -52,7 +51,6 @@ public class ItemHandler {
     }
 
     public boolean isSkull(String name) {
-        PluginHandler pluginHandler = new PluginHandler(plugin);
         String skullTexture = getSkullTexture(name);
         if (skullTexture == null) {
             return false;
@@ -69,7 +67,6 @@ public class ItemHandler {
     }
 
     public String getSkullTexture(String name) {
-        PluginHandler pluginHandler = new PluginHandler(plugin);
         try {
             return pluginHandler.getConfigValue(name + ".custom-texture", false);
         } catch (Exception e) {
@@ -80,15 +77,14 @@ public class ItemHandler {
     public void cacheSkull(String name) {
         if (isSkull(name)) {
             File cache = new File(plugin.getDataFolder(), "skull_cache.yml");
-            PluginHandler ph = new PluginHandler(plugin);
             String base = getSkullTexture(name);
-            String skull = ph.skullCache.getString("cache." + name + ".skull", null);
+            String skull = pluginHandler.skullCache.getString("cache." + name + ".skull", null);
             if (base != null) {
                 if (skull == null || !Objects.equals(base, skull)) {
-                    ph.skullCache.set("cache." + name + ".skull", base);
-                    ph.skullCache.set("cache." + name + ".uuid", UUID.randomUUID().toString());
+                    pluginHandler.skullCache.set("cache." + name + ".skull", base);
+                    pluginHandler.skullCache.set("cache." + name + ".uuid", UUID.randomUUID().toString());
                     try {
-                        ph.skullCache.save(cache);
+                        pluginHandler.skullCache.save(cache);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -98,8 +94,7 @@ public class ItemHandler {
     }
 
     public ItemStack buildItem(String name) {
-        PluginHandler ph = new PluginHandler(plugin);
-        String id = ph.getConfigValue(name + ".item-id", false);
+        String id = pluginHandler.getConfigValue(name + ".item-id", false);
         ItemStack item;
         if (id.contains(":")) {
             item = new ItemStack(Material.matchMaterial(id.split(":")[0]), 1, Short.parseShort(id.split(":")[1]));
@@ -107,20 +102,20 @@ public class ItemHandler {
             item = new ItemStack(Material.matchMaterial(id.split(":")[0]));
         }
         ItemMeta data = item.getItemMeta();
-        String displayName = ph.getConfigValue(name + ".item-name", false);
+        String displayName = pluginHandler.getConfigValue(name + ".item-name", false);
         if (displayName != null) {
             data.setDisplayName(displayName);
         }
-        List<String> itemLore = ph.getList(name + ".item-lore", false);
+        List<String> itemLore = pluginHandler.getList(name + ".item-lore", false);
         if (!itemLore.isEmpty()) {
             data.setLore(itemLore);
         }
         if (!PluginHandler.IS_LEGACY) {
-            int model = ph.itemsConfig.getInt("items." + name + ".custom-model-data", -1);
+            int model = pluginHandler.itemsConfig.getInt("items." + name + ".custom-model-data", -1);
             if (model != -1) data.setCustomModelData(model);
         }
         if (isSkull(name)) {
-            UUID skullUUID = UUID.fromString(ph.skullCache.getString("cache." + name + ".uuid"));
+            UUID skullUUID = UUID.fromString(pluginHandler.skullCache.getString("cache." + name + ".uuid"));
             GameProfile profile = new GameProfile(skullUUID, null);
             profile.getProperties().put("textures", new Property("textures", getSkullTexture(name)));
             Field profileField;
@@ -133,7 +128,7 @@ public class ItemHandler {
             }
         }
         item.setItemMeta(data);
-        List<String> enchantments = ph.getList(name + "item-enchantments", false);
+        List<String> enchantments = pluginHandler.getList(name + "item-enchantments", false);
         if (!enchantments.isEmpty()) {
             if (PluginHandler.IS_LEGACY) {
                 for (String s : enchantments) {

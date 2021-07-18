@@ -47,7 +47,7 @@ public final class InventoryKeeper extends JavaPlugin {
             }
         }
         ph.initConfigCache();
-        ItemHandler ih = new ItemHandler(this);
+        ItemHandler ih = new ItemHandler(this, ph);
         ph.loadItems(ih);
         /*
         TODO: Need to be re-code.
@@ -72,7 +72,7 @@ public final class InventoryKeeper extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new RespawnHandler(this, dataManager, commandExec, ph), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDataInit(dataManager), this);
         //Bukkit.getPluginManager().registerEvents(new InventoryClickHandler(this),this);
-        Bukkit.getPluginManager().registerEvents(new BlockPlacing(this), this);
+        Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(ih, ph), this);
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             this.getLogger().info(MessagesUtil.getMessage("papi-hook"));
             new PlaceholderAPIHook(this, dataManager).register();
