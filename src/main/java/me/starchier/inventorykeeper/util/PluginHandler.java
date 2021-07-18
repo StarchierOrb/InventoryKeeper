@@ -1,6 +1,8 @@
 package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
+import me.starchier.inventorykeeper.i18n.MessagesUtil;
+import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class PluginHandler {
@@ -18,6 +21,7 @@ public class PluginHandler {
     public FileConfiguration itemsConfig = null;
     public FileConfiguration generalConfig = null;
     public FileConfiguration skullCache = null;
+    public List<ItemBase> currentItems = null;
 
     public PluginHandler(InventoryKeeper plugin) {
         this.plugin = plugin;
@@ -109,13 +113,20 @@ public class PluginHandler {
         return fixList;
     }
 
-    public boolean isEmpty(String path) {
-        return plugin.getConfig().getStringList("settings." + path).isEmpty();
-    }
-
     public boolean isNumber(String s) {
         Pattern p = Pattern.compile("[0-9]*");
         return p.matcher(s).matches();
+    }
+
+    public void loadItems(ItemHandler itemHandler) {
+        if (currentItems != null) {
+            currentItems = null;
+        }
+        Set<String> itemKeys = itemsConfig.getConfigurationSection("items").getKeys(false);
+        for (String key : itemKeys) {
+            currentItems.add(new ItemBase(key, itemHandler, this));
+            plugin.getLogger().info(String.format(MessagesUtil.getMessage("loaded-item"), key));
+        }
     }
 
     public List<String> getDisabledWorlds(String itemGroup) {

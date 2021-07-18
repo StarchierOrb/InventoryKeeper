@@ -22,7 +22,7 @@ public class ItemBase {
     private final EntitiesListFilter entitiesListFilter;
     private final EntitiesNameFilter entitiesNameFilter;
     private final HashMap<String, Boolean> enabledDeathType;
-
+    private final String deathMessage;
 
     public ItemBase(String name, ItemHandler itemHandler, PluginHandler pluginHandler) {
         this.name = name;
@@ -38,6 +38,7 @@ public class ItemBase {
         entitiesNameFilter = new EntitiesNameFilter(name, pluginHandler);
         removeItemsWithLore = pluginHandler.getList(name + ".items-with-lore-to-be-removed-on-death", false);
         priority = pluginHandler.itemsConfig.getInt("items." + name + ".priority", 1);
+        deathMessage = pluginHandler.getConfigValue(name + ".death-message", false);
         enabledDeathType = (HashMap<String, Boolean>) pluginHandler.itemsConfig.getMapList("items." + name + ".enabled-death-type").get(0);
     }
 
@@ -47,6 +48,10 @@ public class ItemBase {
 
     public String getName() {
         return name;
+    }
+
+    public String getDeathMessage() {
+        return deathMessage;
     }
 
     public boolean isSaveExp() {

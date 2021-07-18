@@ -22,7 +22,7 @@ public final class InventoryKeeper extends JavaPlugin {
     public void onEnable() {
         PluginHandler ph = new PluginHandler(this);
         MessagesUtil.initMessageBundle();
-        getLogger().info(MessagesUtil.getMessage("server-version") + ph.getVersion() + (ph.isLegacy() ? MessagesUtil.getMessage("is-legacy") : ""));
+        getLogger().info(MessagesUtil.getMessage("server-version") + PluginHandler.SERVER_VERSION + (PluginHandler.IS_LEGACY ? MessagesUtil.getMessage("is-legacy") : ""));
         getLogger().info(MessagesUtil.getMessage("loading-config"));
         File itemsConfig = new File(getDataFolder(), "items.yml");
         if (!itemsConfig.exists()) {
@@ -48,6 +48,9 @@ public final class InventoryKeeper extends JavaPlugin {
         }
         ph.initConfigCache();
         ItemHandler ih = new ItemHandler(this);
+        ph.loadItems(ih);
+        /*
+        TODO: Need to be re-code.
         if(!ih.isItem()) {
             getLogger().severe(String.format(MessagesUtil.getMessage("item-not-valid"), ph.getConfigValue("keep-inventory-item.item-id")));
             getLogger().severe(MessagesUtil.getMessage("replace-not-valid-item"));
@@ -55,8 +58,9 @@ public final class InventoryKeeper extends JavaPlugin {
         }
         ih.validEnchant();
         ih.cacheSkull();
+         */
         getLogger().info(MessagesUtil.getMessage("init-player-data"));
-        DataManager dataManager = new DataManager(this, dataFile);
+        DataManager dataManager = new DataManager(dataFile, ph);
         dataManager.startupProcess();
         getLogger().info(MessagesUtil.getMessage("init-commands"));
         getCommand("invkeep").setExecutor(new CommandTab(this, dataManager));
@@ -66,7 +70,7 @@ public final class InventoryKeeper extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DeathHandler(this, dataManager, commandExec), this);
         Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
         Bukkit.getPluginManager().registerEvents(new RespawnHandler(this, dataManager, commandExec, ph), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerDataInit(this, dataManager), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerDataInit(dataManager), this);
         //Bukkit.getPluginManager().registerEvents(new InventoryClickHandler(this),this);
         Bukkit.getPluginManager().registerEvents(new BlockPlacing(this), this);
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -77,7 +81,7 @@ public final class InventoryKeeper extends JavaPlugin {
         getLogger().info(MessagesUtil.getMessage("donate-msg"));
         getLogger().info(MessagesUtil.getMessage("donate-link"));
         try {
-            MetricsLite metricsLite = new MetricsLite(this, 8286);
+            new MetricsLite(this, 8286);
         } catch (Throwable e) {
             getLogger().warning(MessagesUtil.getMessage("cannot-init-metrics"));
         }

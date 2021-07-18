@@ -19,14 +19,17 @@ public class ItemsConfig {
         config.options().header(MessagesUtil.getMessage("commit.items-header"));
         //Config for default item
         config.addDefault("items.default.item-id", "STICK");
-        config.addDefault("items.default.item-name", MessagesUtil.getConfigValue("default-item-name"));
-        config.addDefault("items.default.item-lore", MessagesUtil.getConfigArrayValue("default-item-lore"));
-        config.addDefault("items.default.item-enchantments", Collections.singletonList(
-                (p.isLegacy() ? Enchantment.DURABILITY.getName() + "-10" : Enchantment.DURABILITY.getKey() + "-10")
-        ));
+        //I don't know if it will works.
+        if (config.getList("items").isEmpty()) {
+            config.addDefault("items.default.item-name", MessagesUtil.getConfigValue("default-item-name"));
+            config.addDefault("items.default.item-lore", MessagesUtil.getConfigArrayValue("default-item-lore"));
+            config.addDefault("items.default.item-enchantments", Collections.singletonList(
+                    (p.isLegacy() ? Enchantment.DURABILITY.getName() + "-10" : Enchantment.DURABILITY.getKey() + "-10")
+            ));
+        }
         config.addDefault("items.default.save-exp", false);
-        config.addDefault("items.default.exp-lose-percentage", "10-30");
         config.addDefault("items.default.disabled-worlds", new ArrayList<>());
+        config.addDefault("items.default.exp-lose-percentage", "10-30");
         config.addDefault("items.default.run-commands-on-death", new ArrayList<>());
         config.addDefault("items.default.run-random-commands-on-death", new ArrayList<>());
         config.addDefault("items.default.run-commands-on-respawn", Collections.singletonList(
@@ -43,6 +46,7 @@ public class ItemsConfig {
         config.addDefault("items.default.items-with-lore-to-be-removed-on-death", Collections.singletonList(
                 "&6Soul bind"
         ));
+        config.addDefault("items.default.death-message", MessagesUtil.getConfigValue("saved-inventory"));
         config.addDefault("items.default.priority", 10);
         config.options().copyDefaults(true);
         try {
