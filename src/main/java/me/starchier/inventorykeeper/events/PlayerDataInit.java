@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerDataInit implements Listener {
-    private DataManager dataManager;
+    private final DataManager dataManager;
     public PlayerDataInit(DataManager dataManager) {
         this.dataManager = dataManager;
     }
