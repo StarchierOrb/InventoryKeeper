@@ -5,6 +5,7 @@ import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -22,6 +23,7 @@ public class PluginHandler {
     public FileConfiguration generalConfig = null;
     public FileConfiguration skullCache = null;
     public List<ItemBase> currentItems = null;
+    public List<String> itemNames = null;
 
     public PluginHandler(InventoryKeeper plugin) {
         this.plugin = plugin;
@@ -119,15 +121,25 @@ public class PluginHandler {
     }
 
     public void loadItems(ItemHandler itemHandler) {
-        if (currentItems != null) {
-            currentItems = null;
-        }
-        //TODO verify if the material exists.
+        currentItems = new ArrayList<>();
+        itemNames = new ArrayList<>();
         Set<String> itemKeys = itemsConfig.getConfigurationSection("items").getKeys(false);
         for (String key : itemKeys) {
+            String itemID = getConfigValue(key + ".item-id", false);
+            if (!itemHandler.isItem(key)) {
+                plugin.getLogger().warning(String.format(MessagesUtil.getMessage("item-not-valid"), itemID));
+                continue;
+            }
+            itemHandler.validEnchant(key);
+            itemHandler.cacheSkull(key);
             currentItems.add(new ItemBase(key, itemHandler, this));
+            itemNames.add(key);
             plugin.getLogger().info(String.format(MessagesUtil.getMessage("loaded-item"), key));
         }
+    }
+
+    public List<String> getItemNames() {
+        return itemNames;
     }
 
     public ItemBase getItemBase(String name) {

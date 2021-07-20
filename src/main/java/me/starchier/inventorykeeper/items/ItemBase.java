@@ -2,6 +2,7 @@ package me.starchier.inventorykeeper.items;
 
 import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;

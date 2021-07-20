@@ -85,6 +85,7 @@ public class GeneralConfig {
         public static final ConfigElement<String> MODIFY_VIRTUAL_ITEM = new ConfigElement<>("messages.modified-amount", MessagesUtil.getConfigValue("modified-amount"));
         public static final ConfigElement<String> VIRTUAL_ITEM_COUNT = new ConfigElement<>("messages.virtual-item-count", MessagesUtil.getConfigValue("virtual-item-count"));
         public static final ConfigElement<String> VIRTUAL_ITEM_COUNT_OTHERS = new ConfigElement<>("messages.virtual-item-count-others", MessagesUtil.getConfigValue("virtual-item-count-others"));
+        public static final ConfigElement<String> VIRTUAL_ITEM_COUNT_FORMAT = new ConfigElement<>("messages.virtual-item-format", MessagesUtil.getConfigValue("virtual-item-format"));
         public static final ConfigElement<String> NO_PERMISSION = new ConfigElement<>("messages.no-permission", MessagesUtil.getConfigValue("no-permission"));
         public static final ConfigElement<String> PLAYER_ONLY = new ConfigElement<>("messages.player-only", MessagesUtil.getConfigValue("player-only"));
         public static final ConfigElement<String> NOT_A_NUMBER = new ConfigElement<>("messages.is-not-number", MessagesUtil.getConfigValue("is-not-number"));
@@ -95,6 +96,7 @@ public class GeneralConfig {
         public static final ConfigElement<String> USAGE_GET = new ConfigElement<>("messages.get-usage", MessagesUtil.getConfigValue("get-usage"));
         public static final ConfigElement<String> PLAYER_NOT_FOUND = new ConfigElement<>("messages.player-not-found", MessagesUtil.getConfigValue("player-not-found"));
         public static final ConfigElement<String> GIVE_ITEM = new ConfigElement<>("messages.gave-item", MessagesUtil.getConfigValue("gave-item"));
+        public static final ConfigElement<String> INVALID_ITEM = new ConfigElement<>("messages.invalid-item", MessagesUtil.getConfigValue("invalid-item"));
         public static final ConfigElement<List<String>> HELP_CONTENT = new ConfigElement<>("messages.help-msg", MessagesUtil.getConfigArrayValue("config.help-msg"));
     }
 

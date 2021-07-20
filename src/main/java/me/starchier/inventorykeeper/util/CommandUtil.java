@@ -1,17 +1,18 @@
 package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
+import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class CommandHandler {
+public class CommandUtil {
     private final InventoryKeeper plugin;
     private final PluginHandler pluginHandler;
     private final ItemHandler itemHandler;
 
-    public CommandHandler(InventoryKeeper plugin, PluginHandler pluginHandler, ItemHandler itemHandler) {
+    public CommandUtil(InventoryKeeper plugin, PluginHandler pluginHandler, ItemHandler itemHandler) {
         this.plugin = plugin;
         this.pluginHandler = pluginHandler;
         this.itemHandler = itemHandler;
@@ -28,19 +29,19 @@ public class CommandHandler {
     public void giveItem(CommandSender sender, String[] args) {
         Player target = findPlayer(args[3]);
         if (target == null) {
-            sender.sendMessage(pluginHandler.getMessage("player-not-found").replace("%s", args[2]));
+            sender.sendMessage(pluginHandler.getMessage("player-not-found").replace("%s", args[3]));
             return;
         }
         if (!itemHandler.isItem(args[2])) {
             sender.sendMessage(String.format(pluginHandler.getMessage("item-not-exist"), args[2]));
             return;
         }
-        ItemStack item = itemHandler.buildItem(args[2]);
-        if (args.length >= 4) {
-            if (pluginHandler.isNumber(args[3])) {
-                item.setAmount(Integer.parseInt(args[3]));
+        ItemStack item = pluginHandler.getItemBase(args[2]).getItem();
+        if (args.length >= 5) {
+            if (pluginHandler.isNumber(args[4])) {
+                item.setAmount(Integer.parseInt(args[4]));
             } else {
-                sender.sendMessage(pluginHandler.getMessage("is-not-number").replace("%s", args[3]));
+                sender.sendMessage(pluginHandler.getMessage("is-not-number").replace("%s", args[4]));
                 item.setAmount(1);
             }
         } else {
