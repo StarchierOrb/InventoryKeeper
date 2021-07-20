@@ -63,8 +63,8 @@ public final class InventoryKeeper extends JavaPlugin {
         DataManager dataManager = new DataManager(dataFile, ph);
         dataManager.startupProcess();
         getLogger().info(MessagesUtil.getMessage("init-commands"));
-        getCommand("invkeep").setExecutor(new CommandTab(this, dataManager));
-        getCommand("invkeep").setTabCompleter(new CommandTab(this, dataManager));
+        getCommand("invkeep").setExecutor(new CommandTab(this, dataManager, ph, ih));
+        getCommand("invkeep").setTabCompleter(new CommandTab(this, dataManager, ph, ih));
         getLogger().info(MessagesUtil.getMessage("init-listeners"));
         CommandExec commandExec = new CommandExec(ph, this);
         Bukkit.getPluginManager().registerEvents(new DeathHandler(this, dataManager, commandExec), this);
@@ -75,7 +75,7 @@ public final class InventoryKeeper extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(ih, ph), this);
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             this.getLogger().info(MessagesUtil.getMessage("papi-hook"));
-            new PlaceholderAPIHook(this, dataManager).register();
+            new PlaceholderAPIHook(this, dataManager, ph).register();
         }
         getLogger().info(MessagesUtil.getMessage("plugin-loaded"));
         getLogger().info(MessagesUtil.getMessage("donate-msg"));
