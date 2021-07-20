@@ -38,25 +38,26 @@ public class CommandTab implements TabExecutor {
     private final String[] playerCommands = {"check"};
     private final String essPerm = "inventorykeeper.check";
     private final String advPerm = "inventorykeeper.check.others";
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(cmd.getName().equalsIgnoreCase("invkeep")) {
-            if(sender instanceof Player && (!playerPerm(sender) && !sender.hasPermission("inventorykeeper.admin"))) {
+        if (cmd.getName().equalsIgnoreCase("invkeep")) {
+            if (sender instanceof Player && (!playerPerm(sender) && !sender.hasPermission("inventorykeeper.admin"))) {
                 sender.sendMessage(pluginHandler.getMessage("no-permission"));
                 return true;
             }
-            if(args.length<1&&playerPerm(sender)) {
+            if (args.length < 1 && playerPerm(sender)) {
                 for (String s : pluginHandler.getList("messages.help-msg", true)) {
                     sender.sendMessage(s);
                 }
                 return true;
             }
-            if(args.length>0&&!sender.hasPermission("inventorykeeper.admin")&&!args[0].equalsIgnoreCase("check")&&sender instanceof Player) {
+            if (args.length > 0 && !sender.hasPermission("inventorykeeper.admin") && !args[0].equalsIgnoreCase("check") && sender instanceof Player) {
                 sender.sendMessage(pluginHandler.getMessage("no-permission"));
                 return true;
             }
-            if(!sender.hasPermission("inventorykeeper.admin")&&sender instanceof Player&&args[0].equalsIgnoreCase("check")) {
-                if(args.length<2) {
+            if (!sender.hasPermission("inventorykeeper.admin") && sender instanceof Player && args[0].equalsIgnoreCase("check")) {
+                if (args.length < 2) {
                     sender.sendMessage(pluginHandler.getMessage("virtual-item-count"));
                     for (ItemBase item : pluginHandler.currentItems) {
                         String name = item.getName();
@@ -64,7 +65,7 @@ public class CommandTab implements TabExecutor {
                     }
                     return true;
                 }
-                if(sender.hasPermission(advPerm)) {
+                if (sender.hasPermission(advPerm)) {
                     Player target = commandUtil.findPlayer(args[1]);
                     if (target == null) {
                         sender.sendMessage(pluginHandler.getMessage("player-not-found").replace("%s", args[1]));
@@ -78,7 +79,7 @@ public class CommandTab implements TabExecutor {
                 }
                 return true;
             }
-            switch(args[0]) {
+            switch (args[0]) {
                 case "reload": {
                     plugin.getLogger().info(MessagesUtil.getMessage("reloading-config"));
                     plugin.reloadConfig();
@@ -179,7 +180,7 @@ public class CommandTab implements TabExecutor {
                     }
                 }
                 case "check": {
-                    if(args.length<2) {
+                    if (args.length < 2) {
                         if (!(sender instanceof Player)) {
                             sender.sendMessage(pluginHandler.getMessage("player-only"));
                             return true;
@@ -258,20 +259,21 @@ public class CommandTab implements TabExecutor {
         }
         return true;
     }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-        if(sender instanceof Player && !(sender.hasPermission("inventorykeeper.admin")||playerPerm(sender))) {
+        if (sender instanceof Player && !(sender.hasPermission("inventorykeeper.admin") || playerPerm(sender))) {
             return new ArrayList<>();
         }
-        if(args.length<2&&!sender.hasPermission("inventorykeeper.admin")) {
+        if (args.length < 2 && !sender.hasPermission("inventorykeeper.admin")) {
             return Arrays.asList(playerCommands);
-        } else if(args.length==2 && args[0].equalsIgnoreCase("check")) {
-            if(sender.hasPermission("inventorykeeper.admin")||sender.hasPermission(advPerm)) {
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("check")) {
+            if (sender.hasPermission("inventorykeeper.admin") || sender.hasPermission(advPerm)) {
                 return getPlayers();
             }
             return new ArrayList<>();
         }
-        if(sender.hasPermission("inventorykeeper.admin")||!(sender instanceof Player)) {
+        if (sender.hasPermission("inventorykeeper.admin") || !(sender instanceof Player)) {
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("get") || args[0].equalsIgnoreCase("give")) {
                     return TYPE_LIST;
