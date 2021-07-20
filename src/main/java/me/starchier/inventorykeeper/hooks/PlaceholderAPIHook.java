@@ -3,16 +3,21 @@ package me.starchier.inventorykeeper.hooks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.util.DataManager;
+import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
-    private InventoryKeeper plugin;
-    private DataManager dataManager;
-    public PlaceholderAPIHook(InventoryKeeper plugin, DataManager dataManager) {
+    private final InventoryKeeper plugin;
+    private final DataManager dataManager;
+    private final PluginHandler pluginHandler;
+
+    public PlaceholderAPIHook(InventoryKeeper plugin, DataManager dataManager, PluginHandler pluginHandler) {
         this.plugin = plugin;
         this.dataManager = dataManager;
+        this.pluginHandler = pluginHandler;
     }
+
     /**
      * Because this is an internal class,
      * you must override this method to let PlaceholderAPI know to not unregister your expansion class when
@@ -70,21 +75,25 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         return plugin.getDescription().getVersion();
     }
     @Override
-    public String onPlaceholderRequest(Player player, String identifier){
+    public String onPlaceholderRequest(Player player, String identifier) {
 
-        if(player == null){
+        if (player == null) {
             return null;
         }
 
-        if(identifier.equals("amount")){
-            return String.valueOf(dataManager.getVirtualCount(player));
-        }
 
-        if(identifier.contains("amount_")) {
-            String playername = identifier.replace("amount_", "");
-            for(Player p : Bukkit.getOnlinePlayers()) {
-                if(p.getName().equals(playername)) {
-                    return String.valueOf(dataManager.getVirtualCount(p));
+        if (identifier.startsWith("amount_")) {
+            String element = identifier.split("_", 2)[1];
+            int index = element.lastIndexOf(',');
+            if (index == -1) {
+                if (pluginHandler.itemNames.contains(element)) {
+                    return String.valueOf(dataManager.getVirtualCount(player, element));
+                }
+            }
+            String playerName = element.substring(index);
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.getName().equals(playerName)) {
+                    return String.valueOf(dataManager.getVirtualCount(p, element.replace(playerName, "")));
                 }
             }
             return "-1";
