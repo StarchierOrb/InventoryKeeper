@@ -1,6 +1,5 @@
 package me.starchier.inventorykeeper.util;
 
-import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;

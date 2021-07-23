@@ -6,12 +6,14 @@ import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
 import me.starchier.inventorykeeper.storage.PlayerStorage;
 import me.starchier.inventorykeeper.util.DataManager;
+import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.ExpHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -158,6 +160,8 @@ public class DeathHandler implements Listener {
             }
         }
 
+        Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumeType: " + consumeType);
+
         if (consumeType == CONSUME_NONE) {
             PlayerStorage.removeKiller(evt.getEntity());
             PlayerStorage.clearPlayer(evt.getEntity());
@@ -197,6 +201,7 @@ public class DeathHandler implements Listener {
         PlayerStorage.clearPlayer(evt.getEntity());
         if (isConsumedFinally) {
             PlayerStorage.setConsumed(evt.getEntity(), consumeItemNames[consumeType]);
+            Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumed item: " + consumeItemNames[consumeType]);
             commandExec.doKeepModInventory(evt.getEntity());
             commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
             commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
@@ -215,6 +220,7 @@ public class DeathHandler implements Listener {
                     targetItem.setAmount(amount);
                 }
                 evt.getEntity().getInventory().setItem(physicalSlot, targetItem);
+                Debugger.logDebugMessage(evt.getEntity().getName() + " died, target slot:" + physicalSlot);
             } else if (consumeType == CONSUME_VIRTUAL) {
                 dataManager.setConsumed(evt.getEntity(), consumeItemNames[consumeType]);
             }
@@ -267,6 +273,16 @@ public class DeathHandler implements Listener {
                 int lost = expHandler.loseExp(evt, consumeItemNames[consumeType]);
                 evt.getEntity().sendMessage(String.format(pluginHandler.getMessage("lost-exp"), lost, (evt.getEntity().getLevel() - lost)));
             }
+            Debugger.logDebugMessage(evt.getEntity().getName() + " death status:");
+            Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
+            Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerDeathDebugger(PlayerDeathEvent evt) {
+        Debugger.logDebugMessage(evt.getEntity().getName() + " : final death status:");
+        Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
+        Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
     }
 }

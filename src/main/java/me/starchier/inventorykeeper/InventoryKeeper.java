@@ -9,6 +9,7 @@ import me.starchier.inventorykeeper.events.*;
 import me.starchier.inventorykeeper.hooks.PlaceholderAPIHook;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.util.DataManager;
+import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.Bukkit;
@@ -49,6 +50,7 @@ public final class InventoryKeeper extends JavaPlugin {
         ph.initConfigCache();
         ItemHandler ih = new ItemHandler(this, ph);
         ph.loadItems(ih);
+        Debugger.enabledDebug = ph.getBooleanConfigValue("debug", true);
         /*
         TODO: Need to be re-code.
         if(!ih.isItem()) {
@@ -69,7 +71,7 @@ public final class InventoryKeeper extends JavaPlugin {
         CommandExec commandExec = new CommandExec(ph, this);
         Bukkit.getPluginManager().registerEvents(new DeathHandler(this, dataManager, commandExec, ph), this);
         Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
-        Bukkit.getPluginManager().registerEvents(new RespawnHandler(this, dataManager, commandExec, ph), this);
+        Bukkit.getPluginManager().registerEvents(new RespawnHandler(commandExec), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDataInit(dataManager), this);
         //Bukkit.getPluginManager().registerEvents(new InventoryClickHandler(this),this);
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(ih, ph), this);

@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class PluginHandler {
-    InventoryKeeper plugin;
+    private final InventoryKeeper plugin;
     public static final String SERVER_VERSION = getVersion();
     public static final int FIXED_SERVER_VERSION = Integer.parseInt(getVersion().replace(".", "").replace("_", "").replace("v", "").replace("R", ""));
     public static final boolean IS_LEGACY = isLegacy();
