@@ -161,7 +161,7 @@ public class DeathHandler implements Listener {
         if (consumeType == CONSUME_NONE) {
             PlayerStorage.removeKiller(evt.getEntity());
             PlayerStorage.clearPlayer(evt.getEntity());
-            PlayerStorage.setConsumed(evt.getEntity(), false);
+            PlayerStorage.setConsumed(evt.getEntity(), null);
             evt.setKeepLevel(false);
             evt.setDroppedExp(Math.min(evt.getEntity().getLevel() * 7, 100));
             commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops", true);
@@ -196,7 +196,7 @@ public class DeathHandler implements Listener {
         PlayerStorage.removeKiller(evt.getEntity());
         PlayerStorage.clearPlayer(evt.getEntity());
         if (isConsumedFinally) {
-            PlayerStorage.setConsumed(evt.getEntity(), true);
+            PlayerStorage.setConsumed(evt.getEntity(), consumeItemNames[consumeType]);
             commandExec.doKeepModInventory(evt.getEntity());
             commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
             commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
@@ -215,6 +215,8 @@ public class DeathHandler implements Listener {
                     targetItem.setAmount(amount);
                 }
                 evt.getEntity().getInventory().setItem(physicalSlot, targetItem);
+            } else if (consumeType == CONSUME_VIRTUAL) {
+                dataManager.virtualUsed(evt.getEntity(), consumeItemNames[consumeType]);
             }
             int i = 0;
             boolean isModern = PluginHandler.FIXED_SERVER_VERSION > 1101;

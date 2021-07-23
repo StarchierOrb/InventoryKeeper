@@ -43,7 +43,7 @@ public class RespawnHandler implements Listener {
             }
         }
         int i;
-        if(evt.getPlayer().hasPermission("inventorykeeper.keep") && PlayerStorage.isConsumed(evt.getPlayer())) {
+        if (evt.getPlayer().hasPermission("inventorykeeper.keep") && PlayerStorage.getConsumed(evt.getPlayer())) {
             commandExec.doRestoreModInventory(evt.getPlayer());
             commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn");
             commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn");
@@ -69,7 +69,7 @@ public class RespawnHandler implements Listener {
                 }
             }
         }
-        if(PlayerStorage.isConsumed(evt.getPlayer())) {
+        if (PlayerStorage.getConsumed(evt.getPlayer())) {
             if (hasItem) {
                 if (evt.getPlayer().getInventory().getItem(i).getAmount() > 1) {
                     ItemStack item = ih.buildItem();
