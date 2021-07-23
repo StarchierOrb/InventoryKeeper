@@ -5,19 +5,17 @@ import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class PluginHandler {
     InventoryKeeper plugin;
     public static final String SERVER_VERSION = getVersion();
+    public static final int FIXED_SERVER_VERSION = Integer.parseInt(getVersion().replace(".", "").replace("_", "").replace("v", "").replace("R", ""));
     public static final boolean IS_LEGACY = isLegacy();
     public FileConfiguration itemsConfig = null;
     public FileConfiguration generalConfig = null;
@@ -40,9 +38,7 @@ public class PluginHandler {
     }
 
     public static boolean isLegacy() {
-        String ver = getVersion().replace(".", "").replace("_", "").replace("v", "").
-                replace("_", "").replace("R", "");
-        return Integer.parseInt(ver) < 1131;
+        return FIXED_SERVER_VERSION < 1131;
     }
 
     public String getConfigValue(String path, boolean isGeneralConfig) {
@@ -53,7 +49,7 @@ public class PluginHandler {
         }
     }
 
-    public Boolean getBoolCfg(String path, boolean isGeneralConfig) {
+    public Boolean getBooleanConfigValue(String path, boolean isGeneralConfig) {
         if (isGeneralConfig) {
             return generalConfig.getBoolean("settings." + path, true);
         } else {
@@ -63,7 +59,7 @@ public class PluginHandler {
 
     public Boolean passConditionEntity(String entityName, String itemGroup) {
         // if true -> restore inventory
-        boolean isBlacklist = getBoolCfg(itemGroup + ".filter-entities-list.is-blacklist", false);
+        boolean isBlacklist = getBooleanConfigValue(itemGroup + ".filter-entities-list.is-blacklist", false);
         //String entity = entityName.split("\\|")[0];
         List<String> entitiesList = getList(itemGroup + ".filter-entities-list.entities", false);
         for (String s : entitiesList) {
@@ -77,7 +73,7 @@ public class PluginHandler {
     public Boolean passConditionEntityName(String name, String itemGroup) {
         // if true -> restore inventory
         String target = name.split("\\|")[1];
-        boolean isBlacklist = getBoolCfg(itemGroup + ".filter-entities-name.is-blacklist", false);
+        boolean isBlacklist = getBooleanConfigValue(itemGroup + ".filter-entities-name.is-blacklist", false);
         List<String> nameList = getList(itemGroup + ".filter-entities-name.names-list", false);
         for (String s : nameList) {
             String fixed = ChatColor.translateAlternateColorCodes('&', s);
@@ -90,9 +86,9 @@ public class PluginHandler {
 
     public Boolean isBlackList(boolean isEntityList, String itemGroup) {
         if (isEntityList) {
-            return getBoolCfg(itemGroup + ".filter-entities-list.is-blacklist", false);
+            return getBooleanConfigValue(itemGroup + ".filter-entities-list.is-blacklist", false);
         } else {
-            return getBoolCfg(itemGroup + ".filter-entities-name.is-blacklist", false);
+            return getBooleanConfigValue(itemGroup + ".filter-entities-name.is-blacklist", false);
         }
     }
 
@@ -136,6 +132,7 @@ public class PluginHandler {
             itemNames.add(key);
             plugin.getLogger().info(String.format(MessagesUtil.getMessage("loaded-item"), key));
         }
+        currentItems.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
     }
 
     public List<String> getItemNames() {

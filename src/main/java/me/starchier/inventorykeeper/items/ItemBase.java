@@ -2,7 +2,6 @@ package me.starchier.inventorykeeper.items;
 
 import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class ItemBase {
     public ItemBase(String name, ItemHandler itemHandler, PluginHandler pluginHandler) {
         this.name = name;
         item = itemHandler.buildItem(name);
-        saveExp = pluginHandler.getBoolCfg(name + ".save-exp", false);
+        saveExp = pluginHandler.getBooleanConfigValue(name + ".save-exp", false);
         expLostPercentage = pluginHandler.getConfigValue(name + ".exp-lose-percentage", false);
         disabledWorlds = pluginHandler.getDisabledWorlds(name);
         runCommandsOnDeath = pluginHandler.getList(name + ".run-commands-on-death", false);
@@ -102,4 +101,5 @@ public class ItemBase {
     public HashMap<String, Boolean> getEnabledDeathType() {
         return enabledDeathType;
     }
+
 }

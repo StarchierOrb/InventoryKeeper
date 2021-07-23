@@ -2,10 +2,11 @@ package me.starchier.inventorykeeper.events;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.command.CommandExec;
+import me.starchier.inventorykeeper.i18n.MessagesUtil;
+import me.starchier.inventorykeeper.items.ItemBase;
 import me.starchier.inventorykeeper.storage.PlayerStorage;
 import me.starchier.inventorykeeper.util.DataManager;
 import me.starchier.inventorykeeper.util.ExpHandler;
-import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
@@ -16,192 +17,254 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DeathHandler implements Listener {
     private final InventoryKeeper plugin;
     private final DataManager dataManager;
     private final CommandExec commandExec;
-    private final boolean getLang = Locale.getDefault().getLanguage().equalsIgnoreCase("zh");
-    public DeathHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec) {
+    private final PluginHandler pluginHandler;
+    private final ExpHandler expHandler;
+
+    public DeathHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
         this.plugin = plugin;
         this.dataManager = dataManager;
         this.commandExec = commandExec;
+        this.pluginHandler = pluginHandler;
+        expHandler = new ExpHandler(pluginHandler);
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent evt) {
-        PluginHandler ph = new PluginHandler(plugin);
-        int lost=0;
-        boolean isDisabled = false, keepInv=false;
-        for (String s : ph.getDisabledWorlds()) {
-            if (evt.getEntity().getWorld().getName().equalsIgnoreCase(s)) {
-                isDisabled = true;
-                break;
-            }
-        }
+        //Consume Type
+        int CONSUME_NONE = -1;
+        int CONSUME_PERMISSION = 0;
+        int CONSUME_PHYSICAL = 1;
+        int CONSUME_VIRTUAL = 2;
+
         //DEBUG OPTION
-        if(ph.getBoolCfg("show-death-cause-on-death")) {
-            if (getLang) {
-                plugin.getLogger().info(ChatColor.GOLD + " [DEBUG]  玩家" + evt.getEntity().getName() + "的死亡原因： " + PlayerStorage.getDeathCause(evt.getEntity()));
-            } else {
-                plugin.getLogger().info(ChatColor.GOLD + " [DEBUG]  Player " + evt.getEntity().getName() + " died from : " + PlayerStorage.getDeathCause(evt.getEntity()));
-            }
+        if (pluginHandler.getBooleanConfigValue("show-death-cause-on-death", true)) {
+            plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause"), evt.getEntity().getName(), PlayerStorage.getDeathCause(evt.getEntity())));
         }
-        if(ph.isLegacy()) {
+        boolean keepInv;
+        if (PluginHandler.IS_LEGACY) {
             keepInv = evt.getEntity().getWorld().getGameRuleValue("keepInventory").equals("true");
         } else {
             keepInv = evt.getEntity().getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY);
         }
-        if(keepInv) {
+        if (keepInv) {
             return;
         }
-        //boolean isSet = false;
-        if(PlayerStorage.isKilledByEntity(evt.getEntity())) {
-            if(PlayerStorage.getKiller(evt.getEntity()).contains("PLAYER|")) {
-                isDisabled = !ph.getBoolCfg("enabled-death-type.PVP");
-                //isDisabled = !ph.getSettings("enabled-death-type.PVP").equalsIgnoreCase("true");
-                //isSet = true;
-            } else if(ph.getBoolCfg("enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString())) {
-                if(PlayerStorage.getKiller(evt.getEntity()).contains("|")) {
-                    boolean entityStat = ph.passConditionEntity(PlayerStorage.getKiller(evt.getEntity()));
-                    boolean nameStat = ph.passConditionEntityName(PlayerStorage.getKiller(evt.getEntity()));
-                    if (ph.isBlackList(false)) {
-                        isDisabled = !(entityStat && nameStat);
-                    } else {
-                        isDisabled = !nameStat;
+        //Shared list
+        List<String> passedItems = new ArrayList<>();
+        String playerWorld = evt.getEntity().getWorld().getName();
+        int consumeType = CONSUME_NONE;
+        String[] consumeItemNames = new String[3];
+
+        //Permission check
+        permissionCheck:
+        for (String itemName : pluginHandler.itemNames) {
+            if (evt.getEntity().hasPermission("inventorykeeper.unlimited." + itemName)) {
+                for (String s : pluginHandler.getDisabledWorlds(itemName)) {
+                    if (playerWorld.equalsIgnoreCase(s)) {
+                        continue permissionCheck;
                     }
-                } else {
-                    isDisabled = !ph.passConditionEntity(PlayerStorage.getKiller(evt.getEntity()));
                 }
-            } else {
-                isDisabled = true;
+                passedItems.add(itemName);
             }
-        } else if(ph.getBoolCfg("enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString())==null) {
-            plugin.getLogger().severe("Could not find key: " + "enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString());
-        } else if(!ph.getBoolCfg("enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString())) {
-            isDisabled = true;
         }
-        PlayerStorage.removeKiller(evt.getEntity());
-        PlayerStorage.clearPlayer(evt.getEntity());
-        if(!isDisabled) {
-            boolean clearVanish = ph.getConfigValue("clear-vanishing-curse-items").equalsIgnoreCase("true") ||
-                    ph.getConfigValue("clear-vanishing-curse-items") == null;
-            boolean dropBinding = ph.getConfigValue("drop-binding-curse-items").equalsIgnoreCase("true");
-            ItemHandler ih = new ItemHandler(plugin);
-            boolean hasItem = false;
-            if (evt.getEntity().hasPermission("inventorykeeper.keep")) {
-                hasItem = true;
+        if (!passedItems.isEmpty()) {
+            for (ItemBase itemBase : pluginHandler.currentItems) {
+                if (passedItems.contains(itemBase.getName())) {
+                    consumeItemNames[CONSUME_PERMISSION] = itemBase.getName();
+                    consumeType = CONSUME_PERMISSION;
+                    break;
+                }
             }
-            if (!hasItem) {
-                for (int i = 0; i < evt.getEntity().getInventory().getSize(); i++) {
-                    if (evt.getEntity().getInventory().getItem(i) == null) {
-                        continue;
-                    }
+        }
+
+        //Physical items check
+        int physicalSlot = -1;
+        if (consumeType == CONSUME_NONE) {
+            HashMap<String, Integer> passedPhysicalItems = new HashMap<>();
+            inventoryCheck:
+            for (int i = 0; i < evt.getEntity().getInventory().getSize(); i++) {
+                if (evt.getEntity().getInventory().getItem(i) == null) {
+                    continue;
+                }
+                for (ItemBase itemBase : pluginHandler.currentItems) {
                     try {
-                        if (evt.getEntity().getInventory().getItem(i).isSimilar(ih.buildItem())) {
-                            hasItem = true;
+                        if (evt.getEntity().getInventory().getItem(i).isSimilar(itemBase.getItem())) {
+                            for (String world : pluginHandler.getDisabledWorlds(itemBase.getName())) {
+                                if (world.equalsIgnoreCase(playerWorld)) {
+                                    continue inventoryCheck;
+                                }
+                            }
+                            passedPhysicalItems.put(itemBase.getName(), i);
                             break;
                         }
                     } catch (Exception e) {
-                        ItemMeta item = ih.buildItem().getItemMeta();
+                        ItemMeta item = itemBase.getItem().getItemMeta();
                         ItemMeta target = evt.getEntity().getInventory().getItem(i).getItemMeta();
                         if (item.getDisplayName().equals(target.getDisplayName()) && item.getLore().equals(target.getLore()) &&
-                                ih.buildItem().getType().equals(evt.getEntity().getInventory().getItem(i).getType())) {
-                            hasItem = true;
+                                itemBase.getItem().getType().equals(evt.getEntity().getInventory().getItem(i).getType())) {
+                            for (String world : pluginHandler.getDisabledWorlds(itemBase.getName())) {
+                                if (world.equalsIgnoreCase(playerWorld)) {
+                                    continue inventoryCheck;
+                                }
+                            }
+                            passedPhysicalItems.put(itemBase.getName(), i);
                             break;
                         }
                     }
                 }
             }
-            if(!hasItem) {
-                if(dataManager.getVirtualCount(evt.getEntity())>0) {
-                    hasItem=true;
-                }
-            }
-            if(hasItem) {
-                PlayerStorage.setConsumed(evt.getEntity(), true);
-                commandExec.doKeepModInventory(evt.getEntity());
-                commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death");
-                commandExec.runRandomCommands(evt.getEntity(), true, "settings.run-random-commands-on-death");
-                evt.setKeepInventory(true);
-                if (!ph.isLegacy()) {
-                    evt.getDrops().clear();
-                }
-                String ver = ph.getVersion().replace(".","").replace("_","").replace("v","").
-                        replace("_","").replace("R","");
-                int i = 0;
-                for(ItemStack item : evt.getEntity().getInventory()) {
-                    if(item == null) {
-                        i++;
-                        continue;
-                    }
-                    if(!item.hasItemMeta()) {
-                        i++;
-                        continue;
-                    }
-                    if(!item.getItemMeta().hasLore()) {
-                        i++;
-                        continue;
-                    }
-                    for(String lore : ph.getList("settings.items-with-lore-to-be-removed-on-death")) {
-                        boolean done = false;
-                        for(String itemLore : item.getItemMeta().getLore()) {
-                            if(itemLore.equalsIgnoreCase(lore)) {
-                                evt.getEntity().getInventory().setItem(i, null);
-                                done = true;
-                                break;
-                            }
-                        }
-                        if(done) {
-                            break;
-                        }
-                    }
-                    i++;
-                }
-                if (Integer.parseInt(ver) > 1101) {
-                    i = 0;
-                    for (ItemStack item : evt.getEntity().getInventory()) {
-                        if (clearVanish) {
-                            try {
-                                if (item.containsEnchantment(Enchantment.VANISHING_CURSE)) {
-                                    evt.getEntity().getInventory().setItem(i, null);
-                                    i++;
-                                    continue;
-                                }
-                            } catch (Exception e) {
-                            }
-                        }
-                        if (dropBinding) {
-                            try {
-                                if (item.containsEnchantment(Enchantment.BINDING_CURSE)) {
-                                    evt.getEntity().getWorld().dropItem(evt.getEntity().getLocation(), item);
-                                    evt.getEntity().getInventory().setItem(i, null);
-                                }
-                            } catch (Exception e) {
-                            }
-                        }
-                        i++;
+            if (!passedPhysicalItems.isEmpty()) {
+                for (ItemBase itemBase : pluginHandler.currentItems) {
+                    if (passedPhysicalItems.containsKey(itemBase.getName())) {
+                        physicalSlot = passedPhysicalItems.get(itemBase.getName());
+                        consumeItemNames[CONSUME_PHYSICAL] = itemBase.getName();
+                        consumeType = CONSUME_PHYSICAL;
+                        break;
                     }
                 }
-                evt.getEntity().sendMessage(ph.getMessage("saved-inventory"));
-                if (ph.getCfg().getBoolean("settings.save-exp")) {
-                    evt.setKeepLevel(true);
-                    evt.setDroppedExp(0);
-                } else {
-                    evt.setKeepLevel(false);
-                    evt.setDroppedExp(0);
-                    ExpHandler eh = new ExpHandler();
-                    lost = eh.loseExp(evt);
-                    evt.getEntity().sendMessage(ph.getMessage("lost-exp").replace("%s1", String.valueOf(lost)).replace("%s2", String.valueOf(evt.getEntity().getLevel() - lost)));
-                }
-                return;
             }
         }
-        PlayerStorage.setConsumed(evt.getEntity(), false);
-        evt.setKeepLevel(false);
-        evt.setDroppedExp(Math.min(evt.getEntity().getLevel() * 7, 100));
-        commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops");
-        commandExec.runRandomCommands(evt.getEntity(), true, "settings.run-random-commands-on-death-if-drops");
+
+        //Virtual items check
+        if (consumeType == CONSUME_NONE) {
+            passedItems = new ArrayList<>();
+            virtualCheck:
+            for (String key : pluginHandler.itemNames) {
+                if (dataManager.getVirtualCount(evt.getEntity(), key) > 0) {
+                    for (String s : pluginHandler.getDisabledWorlds(key)) {
+                        if (playerWorld.equalsIgnoreCase(s)) {
+                            continue virtualCheck;
+                        }
+                    }
+                    passedItems.add(key);
+                }
+            }
+            if (!passedItems.isEmpty()) {
+                for (ItemBase itemBase : pluginHandler.currentItems) {
+                    if (passedItems.contains(itemBase.getName())) {
+                        consumeItemNames[CONSUME_VIRTUAL] = itemBase.getName();
+                        consumeType = CONSUME_VIRTUAL;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (consumeType == CONSUME_NONE) {
+            PlayerStorage.removeKiller(evt.getEntity());
+            PlayerStorage.clearPlayer(evt.getEntity());
+            PlayerStorage.setConsumed(evt.getEntity(), false);
+            evt.setKeepLevel(false);
+            evt.setDroppedExp(Math.min(evt.getEntity().getLevel() * 7, 100));
+            commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops", true);
+            commandExec.runRandomCommands(evt.getEntity(), true, "settings.run-random-commands-on-death-if-drops", true);
+            return;
+        }
+
+
+        //Process player inventory stage
+        boolean isConsumedFinally;
+        if (PlayerStorage.isKilledByEntity(evt.getEntity())) {
+            if (PlayerStorage.getKiller(evt.getEntity()).contains("PLAYER|")) {
+                isConsumedFinally = pluginHandler.getBooleanConfigValue(consumeItemNames[consumeType] + ".enabled-death-type.PVP", false);
+            } else if (pluginHandler.getBooleanConfigValue(consumeItemNames[consumeType] + ".enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString(), false)) {
+                if (PlayerStorage.getKiller(evt.getEntity()).contains("|")) {
+                    boolean isPassedEntity = pluginHandler.passConditionEntity(PlayerStorage.getKiller(evt.getEntity()), consumeItemNames[consumeType]);
+                    boolean isPassedName = pluginHandler.passConditionEntityName(PlayerStorage.getKiller(evt.getEntity()), consumeItemNames[consumeType]);
+                    if (pluginHandler.isBlackList(false, consumeItemNames[consumeType])) {
+                        isConsumedFinally = isPassedEntity && isPassedName;
+                    } else {
+                        isConsumedFinally = isPassedName;
+                    }
+                } else {
+                    isConsumedFinally = pluginHandler.passConditionEntity(PlayerStorage.getKiller(evt.getEntity()), consumeItemNames[consumeType]);
+                }
+            } else {
+                isConsumedFinally = false;
+            }
+        } else {
+            isConsumedFinally = pluginHandler.getBooleanConfigValue(consumeItemNames[consumeType] + ".enabled-death-type." + PlayerStorage.getDeathCause(evt.getEntity()).toString(), false);
+        }
+        PlayerStorage.removeKiller(evt.getEntity());
+        PlayerStorage.clearPlayer(evt.getEntity());
+        if (isConsumedFinally) {
+            PlayerStorage.setConsumed(evt.getEntity(), true);
+            commandExec.doKeepModInventory(evt.getEntity());
+            commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
+            commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
+            evt.setKeepInventory(true);
+            if (!PluginHandler.IS_LEGACY) {
+                evt.getDrops().clear();
+            }
+            boolean clearVanish = pluginHandler.getBooleanConfigValue("clear-vanishing-curse-items", true);
+            boolean dropBinding = pluginHandler.getBooleanConfigValue("drop-binding-curse-items", true);
+            if (consumeType == CONSUME_PHYSICAL) {
+                ItemStack targetItem = evt.getEntity().getInventory().getItem(physicalSlot);
+                int amount = targetItem.getAmount() - 1;
+                if (amount <= 0) {
+                    targetItem = null;
+                } else {
+                    targetItem.setAmount(amount);
+                }
+                evt.getEntity().getInventory().setItem(physicalSlot, targetItem);
+            }
+            int i = 0;
+            boolean isModern = PluginHandler.FIXED_SERVER_VERSION > 1101;
+            for (ItemStack item : evt.getEntity().getInventory()) {
+                //Clear custom item
+                if (item == null) {
+                    i++;
+                    continue;
+                }
+                if (isModern) {
+                    try {
+                        if (clearVanish && item.containsEnchantment(Enchantment.VANISHING_CURSE)) {
+                            evt.getEntity().getInventory().setItem(i, null);
+                        }
+                        if (dropBinding && item.containsEnchantment(Enchantment.BINDING_CURSE)) {
+                            evt.getEntity().getWorld().dropItem(evt.getEntity().getLocation(), item);
+                            evt.getEntity().getInventory().setItem(i, null);
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+                if (!item.hasItemMeta()) {
+                    i++;
+                    continue;
+                }
+                if (!item.getItemMeta().hasLore()) {
+                    i++;
+                    continue;
+                }
+                clearSpecificItems:
+                for (String lore : pluginHandler.getList(consumeItemNames[consumeType] + ".items-with-lore-to-be-removed-on-death", false)) {
+                    for (String itemLore : item.getItemMeta().getLore()) {
+                        if (itemLore.equalsIgnoreCase(lore)) {
+                            evt.getEntity().getInventory().setItem(i, null);
+                            break clearSpecificItems;
+                        }
+                    }
+                }
+                i++;
+            }
+            evt.getEntity().sendMessage(pluginHandler.getConfigValue(consumeItemNames[consumeType] + ".death-message", false));
+            if (pluginHandler.getBooleanConfigValue(consumeItemNames[consumeType] + ".save-exp", false)) {
+                evt.setKeepLevel(true);
+                evt.setDroppedExp(0);
+            } else {
+                evt.setKeepLevel(false);
+                evt.setDroppedExp(0);
+                int lost = expHandler.loseExp(evt, consumeItemNames[consumeType]);
+                evt.getEntity().sendMessage(String.format(pluginHandler.getMessage("lost-exp"), lost, (evt.getEntity().getLevel() - lost)));
+            }
+        }
     }
 }

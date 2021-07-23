@@ -9,7 +9,7 @@ public class EntitiesNameFilter {
     private final List<String> nameList;
 
     public EntitiesNameFilter(String name, PluginHandler pluginHandler) {
-        isBlacklist = pluginHandler.getBoolCfg(name + ".filter-entities-name.is-blacklist", false);
+        isBlacklist = pluginHandler.getBooleanConfigValue(name + ".filter-entities-name.is-blacklist", false);
         nameList = pluginHandler.getList(name + ".filter-entities-name.names-list", false);
     }
 

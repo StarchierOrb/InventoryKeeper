@@ -70,18 +70,15 @@ public class DataManager {
     }
 
     public int setVirtual(Player player, int amount, String name) {
-        if (amount < 0) {
-            getData().set("playerdata." + player.getUniqueId() + "." + name, 0);
-            saveData();
-            return 0;
-        }
-        getData().set("playerdata." + player.getUniqueId() + "." + name, amount);
-        saveData();
-        return amount;
+        return processModify(player, name, amount);
     }
 
     public int takeVirtual(Player player, int amount, String name) {
         int count = getVirtualCount(player, name) - amount;
+        return processModify(player, name, count);
+    }
+
+    private int processModify(Player player, String name, int count) {
         if (count < 0) {
             getData().set("playerdata." + player.getUniqueId() + "." + name, 0);
             saveData();

@@ -17,7 +17,7 @@ public class EntitiesListFilter {
     }
 
     public EntitiesListFilter(String name, PluginHandler pluginHandler) {
-        isBlacklist = pluginHandler.getBoolCfg(name + ".filter-entities-list.is-blacklist", false);
+        isBlacklist = pluginHandler.getBooleanConfigValue(name + ".filter-entities-list.is-blacklist", false);
         entities = pluginHandler.getList(name + ".filter-entities-list.entities", false);
     }
 }
