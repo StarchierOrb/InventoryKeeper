@@ -57,12 +57,7 @@ public class PlayerStorage {
     }
 
     public static String getConsumed(Player player) {
-        for (Map.Entry<Player, String> entry : consumeMap.entrySet()) {
-            if (entry.getKey() == player) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return consumeMap.get(player);
     }
 
     public static void setConsumed(Player player, String consumed) {

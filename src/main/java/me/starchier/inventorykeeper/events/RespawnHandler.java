@@ -4,9 +4,7 @@ import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.storage.PlayerStorage;
 import me.starchier.inventorykeeper.util.DataManager;
-import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
-import org.bukkit.GameRule;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -14,85 +12,34 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class RespawnHandler implements Listener {
-    private InventoryKeeper plugin;
-    private DataManager dataManager;
-    private CommandExec commandExec;
-    private PluginHandler ph;
-    public RespawnHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler ph) {
+    private final InventoryKeeper plugin;
+    private final DataManager dataManager;
+    private final CommandExec commandExec;
+    private final PluginHandler pluginHandler;
+
+    public RespawnHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
         this.plugin = plugin;
         this.dataManager = dataManager;
         this.commandExec = commandExec;
-        this.ph = ph;
+        this.pluginHandler = pluginHandler;
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent evt) {
-        ItemHandler ih = new ItemHandler(plugin);
-        for (String s : ph.getDisabledWorlds()) {
-            if (evt.getPlayer().getWorld().getName().equals(s)) {
-                return;
-            }
-        }
-        if(ph.isLegacy()) {
-            if(evt.getPlayer().getWorld().getGameRuleValue("keepInventory").equals("true")) {
-                return;
-            }
-        } else {
-            if(evt.getPlayer().getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY)) {
-                return;
-            }
-        }
-        int i;
-        if (evt.getPlayer().hasPermission("inventorykeeper.keep") && PlayerStorage.getConsumed(evt.getPlayer())) {
-            commandExec.doRestoreModInventory(evt.getPlayer());
-            commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn");
-            commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn");
+        String consumedItem;
+        try {
+            consumedItem = PlayerStorage.getConsumed(evt.getPlayer());
+        } catch (NullPointerException e) {
             return;
         }
-        boolean hasItem = false;
-        for(i=0;i<evt.getPlayer().getInventory().getSize();i++) {
-            if(evt.getPlayer().getInventory().getItem(i)==null) {
-                continue;
-            }
-            try {
-                if (evt.getPlayer().getInventory().getItem(i).isSimilar(ih.buildItem())) {
-                    hasItem = true;
-                    break;
-                }
-            } catch (Exception e) {
-                ItemMeta itemMeta = ih.buildItem().getItemMeta();
-                ItemMeta target = evt.getPlayer().getInventory().getItem(i).getItemMeta();
-                if (itemMeta.getDisplayName().equals(target.getDisplayName()) && itemMeta.getLore().equals(target.getLore()) &&
-                        ih.buildItem().getType().equals(evt.getPlayer().getInventory().getItem(i).getType())) {
-                    hasItem = true;
-                    break;
-                }
-            }
+        if (consumedItem == null) {
+            commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn-if-drops", true);
+            commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn-if-drops", true);
+            PlayerStorage.resetConsumed(evt.getPlayer());
+            return;
         }
-        if (PlayerStorage.getConsumed(evt.getPlayer())) {
-            if (hasItem) {
-                if (evt.getPlayer().getInventory().getItem(i).getAmount() > 1) {
-                    ItemStack item = ih.buildItem();
-                    item.setAmount(evt.getPlayer().getInventory().getItem(i).getAmount() - 1);
-                    evt.getPlayer().getInventory().setItem(i, item);
-                } else {
-                    evt.getPlayer().getInventory().setItem(i, null);
-                }
-                commandExec.doRestoreModInventory(evt.getPlayer());
-                commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn");
-                commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn");
-                return;
-            }
-            if (dataManager.getVirtualCount(evt.getPlayer()) > 0) {
-                commandExec.doRestoreModInventory(evt.getPlayer());
-                commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn");
-                commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn");
-                dataManager.virtualUsed(evt.getPlayer());
-                return;
-            }
-        }
-        commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn-if-drops");
-        commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn-if-drops");
-        PlayerStorage.resetConsumed(evt.getPlayer());
+        commandExec.doRestoreModInventory(evt.getPlayer());
+        commandExec.runCommands(evt.getPlayer(), false, consumedItem + ".run-commands-on-respawn", false);
+        commandExec.runRandomCommands(evt.getPlayer(), false, consumedItem + ".run-random-commands-on-respawn", false);
     }
 }

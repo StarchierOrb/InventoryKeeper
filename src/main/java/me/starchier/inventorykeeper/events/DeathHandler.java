@@ -216,7 +216,7 @@ public class DeathHandler implements Listener {
                 }
                 evt.getEntity().getInventory().setItem(physicalSlot, targetItem);
             } else if (consumeType == CONSUME_VIRTUAL) {
-                dataManager.virtualUsed(evt.getEntity(), consumeItemNames[consumeType]);
+                dataManager.setConsumed(evt.getEntity(), consumeItemNames[consumeType]);
             }
             int i = 0;
             boolean isModern = PluginHandler.FIXED_SERVER_VERSION > 1101;

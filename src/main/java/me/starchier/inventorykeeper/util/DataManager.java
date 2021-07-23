@@ -55,7 +55,7 @@ public class DataManager {
         saveData();
     }
 
-    public void virtualUsed(Player target, String name) {
+    public void setConsumed(Player target, String name) {
         getData().set("playerdata." + target.getUniqueId() + "." + name, getVirtualCount(target, name) - 1);
         saveData();
     }
