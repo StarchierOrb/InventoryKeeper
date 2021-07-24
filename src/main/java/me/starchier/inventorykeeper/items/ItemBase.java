@@ -1,11 +1,13 @@
 package me.starchier.inventorykeeper.items;
 
+import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ItemBase {
     private final String name;
@@ -21,7 +23,7 @@ public class ItemBase {
     private final int priority;
     private final EntitiesListFilter entitiesListFilter;
     private final EntitiesNameFilter entitiesNameFilter;
-    private final HashMap<String, Boolean> enabledDeathType;
+    private final HashMap<String, Boolean> enabledDeathType = new HashMap<>();
     private final String deathMessage;
 
     public ItemBase(String name, ItemHandler itemHandler, PluginHandler pluginHandler) {
@@ -39,7 +41,16 @@ public class ItemBase {
         removeItemsWithLore = pluginHandler.getList(name + ".items-with-lore-to-be-removed-on-death", false);
         priority = pluginHandler.itemsConfig.getInt("items." + name + ".priority", 1);
         deathMessage = pluginHandler.getConfigValue(name + ".death-message", false);
-        enabledDeathType = (HashMap<String, Boolean>) pluginHandler.itemsConfig.getMapList("items." + name + ".enabled-death-type").get(0);
+        Map<String, Object> typeList = pluginHandler.itemsConfig.getConfigurationSection("items." + name + ".enabled-death-type").getValues(false);
+        for (Map.Entry<String, Object> entry : typeList.entrySet()) {
+            try {
+                enabledDeathType.put(entry.getKey(), (Boolean) entry.getValue());
+            } catch (ClassCastException e) {
+                Debugger.logDebugMessage("value of" + entry.getKey() + " is not boolean: " + e.getMessage());
+                enabledDeathType.put(entry.getKey(), true);
+            }
+        }
+        Debugger.logDebugMessage("loaded " + enabledDeathType.size() + " types");
     }
 
     public ItemStack getItem() {

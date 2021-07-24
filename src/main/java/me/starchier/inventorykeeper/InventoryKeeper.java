@@ -8,10 +8,7 @@ import me.starchier.inventorykeeper.configurations.ItemsConfig;
 import me.starchier.inventorykeeper.events.*;
 import me.starchier.inventorykeeper.hooks.PlaceholderAPIHook;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
-import me.starchier.inventorykeeper.util.DataManager;
-import me.starchier.inventorykeeper.util.Debugger;
-import me.starchier.inventorykeeper.util.ItemHandler;
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,6 +22,10 @@ public final class InventoryKeeper extends JavaPlugin {
         MessagesUtil.initMessageBundle();
         getLogger().info(MessagesUtil.getMessage("server-version") + PluginHandler.SERVER_VERSION + (PluginHandler.IS_LEGACY ? MessagesUtil.getMessage("is-legacy") : ""));
         getLogger().info(MessagesUtil.getMessage("loading-config"));
+        ConversionUtil conversionUtil = new ConversionUtil(this);
+        conversionUtil.convertConfig();
+        conversionUtil.convertSkull();
+        conversionUtil.convertData();
         File itemsConfig = new File(getDataFolder(), "items.yml");
         if (!itemsConfig.exists()) {
             saveResource("items.yml", false);
@@ -49,8 +50,8 @@ public final class InventoryKeeper extends JavaPlugin {
         }
         ph.initConfigCache();
         ItemHandler ih = new ItemHandler(this, ph);
-        ph.loadItems(ih);
         Debugger.enabledDebug = ph.getBooleanConfigValue("debug", true);
+        ph.loadItems(ih);
         /*
         TODO: Need to be re-code.
         if(!ih.isItem()) {

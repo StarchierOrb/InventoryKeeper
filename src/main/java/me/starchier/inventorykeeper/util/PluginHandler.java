@@ -130,8 +130,9 @@ public class PluginHandler {
             itemHandler.cacheSkull(key);
             currentItems.add(new ItemBase(key, itemHandler, this));
             itemNames.add(key);
-            plugin.getLogger().info(String.format(MessagesUtil.getMessage("loaded-item"), key));
+            plugin.getLogger().info(" - " + String.format(MessagesUtil.getMessage("loaded-item"), key));
         }
+        plugin.getLogger().info("(!)" + String.format(MessagesUtil.getMessage("load-item-completed"), currentItems.size()));
         currentItems.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
     }
 

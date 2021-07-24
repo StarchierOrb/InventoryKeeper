@@ -3,11 +3,9 @@ package me.starchier.inventorykeeper.command;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
-import me.starchier.inventorykeeper.util.CommandUtil;
-import me.starchier.inventorykeeper.util.DataManager;
-import me.starchier.inventorykeeper.util.ItemHandler;
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.util.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -71,7 +69,7 @@ public class CommandTab implements TabExecutor {
                         sender.sendMessage(pluginHandler.getMessage("player-not-found").replace("%s", args[1]));
                         return true;
                     }
-                    sender.sendMessage(pluginHandler.getMessage("virtual-item-count-others"));
+                    sender.sendMessage(pluginHandler.getMessage("virtual-item-count-others").replace("%s", args[1]));
                     for (ItemBase item : pluginHandler.currentItems) {
                         String name = item.getName();
                         sender.sendMessage(String.format(pluginHandler.getMessage("virtual-item-format"), name, dataManager.getVirtualCount(target, name)));
@@ -87,6 +85,8 @@ public class CommandTab implements TabExecutor {
                     pluginHandler.loadItems(itemHandler);
                     plugin.getLogger().info(MessagesUtil.getMessage("reloading-player-data"));
                     dataManager.reloadData();
+                    Debugger.enabledDebug = pluginHandler.getBooleanConfigValue("debug", true);
+                    sender.sendMessage(ChatColor.GOLD + "(!)" + ChatColor.GREEN + String.format(MessagesUtil.getMessage("load-item-completed"), pluginHandler.currentItems.size()));
                     sender.sendMessage(MessagesUtil.getMessage("reloaded-config"));
                     return true;
                 }

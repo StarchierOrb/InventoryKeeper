@@ -10,6 +10,6 @@ public class Debugger {
         if (!enabledDebug) {
             return;
         }
-        Bukkit.getLogger().info(ChatColor.AQUA + " [DEBUG] " + message);
+        Bukkit.getLogger().info(" [DEBUG] " + ChatColor.AQUA + message);
     }
 }
