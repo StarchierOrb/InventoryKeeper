@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 public final class InventoryKeeper extends JavaPlugin {
+    public static boolean papiEnabled = false;
     @Override
     public void onEnable() {
         PluginHandler ph = new PluginHandler(this);
@@ -78,6 +79,7 @@ public final class InventoryKeeper extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(ih, ph), this);
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             this.getLogger().info(MessagesUtil.getMessage("papi-hook"));
+            papiEnabled = true;
             new PlaceholderAPIHook(this, dataManager, ph).register();
         }
         getLogger().info(MessagesUtil.getMessage("plugin-loaded"));

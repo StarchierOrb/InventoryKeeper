@@ -1,6 +1,7 @@
 package me.starchier.inventorykeeper.util;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.starchier.inventorykeeper.InventoryKeeper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -23,7 +24,7 @@ public class StringUtil {
     }
 
     public static String replacePlaceholder(String str, Player player) {
-        if (PlaceholderAPI.containsPlaceholders(str)) {
+        if (InventoryKeeper.papiEnabled && PlaceholderAPI.containsPlaceholders(str)) {
             return PlaceholderAPI.setPlaceholders(player, str);
         }
         return str;
