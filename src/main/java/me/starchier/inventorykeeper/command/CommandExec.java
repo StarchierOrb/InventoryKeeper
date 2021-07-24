@@ -2,6 +2,7 @@ package me.starchier.inventorykeeper.command;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -57,7 +58,7 @@ public class CommandExec {
                 continue;
             }
             if (isDeathCommand) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replace("%player%", player.getName()));
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtil.replacePlaceholder(s.replace("%player%", player.getName()), player));
             } else {
                 runCmds.add(s.replace("%player%", player.getName()));
             }
@@ -74,13 +75,13 @@ public class CommandExec {
                             boolean isOP = player.isOp();
                             try {
                                 player.setOp(true);
-                                Bukkit.dispatchCommand(player, s.replace("[op]", ""));
+                                Bukkit.dispatchCommand(player, StringUtil.replacePlaceholder(s.replace("[op]", ""), player));
                             } catch (Exception e) {
                             } finally {
                                 player.setOp(isOP);
                             }
                         } else {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtil.replacePlaceholder(s, player));
                         }
                     }
                 }
@@ -95,7 +96,7 @@ public class CommandExec {
                 boolean isOP = player.isOp();
                 try {
                     player.setOp(true);
-                    Bukkit.dispatchCommand(player, fixCmd.replace("%player%", player.getName()));
+                    Bukkit.dispatchCommand(player, StringUtil.replacePlaceholder(fixCmd.replace("%player%", player.getName()), player));
                 } catch (Exception e) {
                 } finally {
                     player.setOp(isOP);
@@ -131,7 +132,7 @@ public class CommandExec {
                 runCmds.add(s.replace("%player%", player.getName()));
                 continue;
             }
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replace("%player%", player.getName()));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtil.replacePlaceholder(s.replace("%player%", player.getName()), player));
         }
         runCommandsOnRespawn(player, isDeath, runCmds);
     }

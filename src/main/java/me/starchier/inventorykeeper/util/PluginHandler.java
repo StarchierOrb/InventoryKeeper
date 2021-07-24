@@ -43,9 +43,9 @@ public class PluginHandler {
 
     public String getConfigValue(String path, boolean isGeneralConfig) {
         if (isGeneralConfig) {
-            return ChatColor.translateAlternateColorCodes('&', generalConfig.getString("settings." + path, null));
+            return StringUtil.transform(ChatColor.translateAlternateColorCodes('&', generalConfig.getString("settings." + path, null)));
         } else {
-            return ChatColor.translateAlternateColorCodes('&', itemsConfig.getString("items." + path, null));
+            return StringUtil.transform(ChatColor.translateAlternateColorCodes('&', itemsConfig.getString("items." + path, null)));
         }
     }
 
@@ -93,7 +93,7 @@ public class PluginHandler {
     }
 
     public String getMessage(String path) {
-        return ChatColor.translateAlternateColorCodes('&', generalConfig.getString("messages." + path, null));
+        return StringUtil.transform(ChatColor.translateAlternateColorCodes('&', generalConfig.getString("messages." + path, null)));
     }
 
     public List<String> getList(String path, boolean isGeneralConfig) {
@@ -106,6 +106,7 @@ public class PluginHandler {
         List<String> fixList = new ArrayList<>();
         for (String s : originList) {
             s = ChatColor.translateAlternateColorCodes('&', s);
+            s = StringUtil.transform(s);
             fixList.add(s);
         }
         return fixList;
