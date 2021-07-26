@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class ItemsConfig {
-    public static void initItemsConfig(InventoryKeeper plugin, PluginHandler p) {
+    public static void initItemsConfig(InventoryKeeper plugin) {
         File file = new File(plugin.getDataFolder(), "items.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.options().header(MessagesUtil.getMessage("commit.items-header"));

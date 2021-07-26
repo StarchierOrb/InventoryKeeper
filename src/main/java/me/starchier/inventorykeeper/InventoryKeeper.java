@@ -32,7 +32,7 @@ public final class InventoryKeeper extends JavaPlugin {
             saveResource("items.yml", false);
         }
         GeneralConfig.initConfig(this);
-        ItemsConfig.initItemsConfig(this, ph);
+        ItemsConfig.initItemsConfig(this);
         File cache = new File(getDataFolder(), "skull_cache.yml");
         if (!cache.exists()) {
             try {
@@ -53,16 +53,6 @@ public final class InventoryKeeper extends JavaPlugin {
         ItemHandler ih = new ItemHandler(this, ph);
         Debugger.enabledDebug = ph.getBooleanConfigValue("debug", true);
         ph.loadItems(ih);
-        /*
-        TODO: Need to be re-code.
-        if(!ih.isItem()) {
-            getLogger().severe(String.format(MessagesUtil.getMessage("item-not-valid"), ph.getConfigValue("keep-inventory-item.item-id")));
-            getLogger().severe(MessagesUtil.getMessage("replace-not-valid-item"));
-            ph.getCfg().set("settings.keep-inventory-item.item-id", "STICK");
-        }
-        ih.validEnchant();
-        ih.cacheSkull();
-         */
         getLogger().info(MessagesUtil.getMessage("init-player-data"));
         DataManager dataManager = new DataManager(dataFile, ph);
         dataManager.startupProcess();

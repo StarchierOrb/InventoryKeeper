@@ -18,20 +18,24 @@ public class FoodLevel {
     public FoodLevel(String foodLevel, String saturationLevel) {
         if (foodLevel.startsWith("keep")) {
             restoreFoodType = KEEP_HUNGER;
+            this.foodLevel = null;
         } else if (foodLevel.startsWith("reset")) {
             restoreFoodType = RESET_HUNGER;
+            this.foodLevel = null;
         } else {
             restoreFoodType = FIXED_HUNGER;
+            this.foodLevel = foodLevel.split(",", 2)[1];
         }
-        this.foodLevel = foodLevel.split(",", 2)[1];
         if (saturationLevel.startsWith("keep")) {
             restoreSaturationType = KEEP_HUNGER;
+            this.saturationLevel = null;
         } else if (saturationLevel.startsWith("reset")) {
             restoreSaturationType = RESET_HUNGER;
+            this.saturationLevel = null;
         } else {
             restoreSaturationType = FIXED_HUNGER;
+            this.saturationLevel = saturationLevel.split(",", 2)[1];
         }
-        this.saturationLevel = saturationLevel.split(",", 2)[1];
     }
 
     public int getRestoreFoodType() {
