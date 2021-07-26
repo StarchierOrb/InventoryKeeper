@@ -73,7 +73,7 @@ public final class InventoryKeeper extends JavaPlugin {
         CommandExec commandExec = new CommandExec(ph, this);
         Bukkit.getPluginManager().registerEvents(new DeathHandler(this, dataManager, commandExec, ph), this);
         Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
-        Bukkit.getPluginManager().registerEvents(new RespawnHandler(commandExec), this);
+        Bukkit.getPluginManager().registerEvents(new RespawnHandler(commandExec, ph), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDataInit(dataManager), this);
         //Bukkit.getPluginManager().registerEvents(new InventoryClickHandler(this),this);
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(ih, ph), this);

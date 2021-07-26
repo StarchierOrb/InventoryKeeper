@@ -2,6 +2,7 @@ package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
+import me.starchier.inventorykeeper.items.FoodLevel;
 import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,15 +23,17 @@ public class PluginHandler {
     public FileConfiguration skullCache = null;
     public List<ItemBase> currentItems = null;
     public List<String> itemNames = null;
+    public FoodLevel defaultFoodLevel;
 
     public PluginHandler(InventoryKeeper plugin) {
         this.plugin = plugin;
     }
 
     public void initConfigCache() {
-        this.itemsConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "items.yml"));
-        this.generalConfig = plugin.getConfig();
-        this.skullCache = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "skull_cache.yml"));
+        itemsConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "items.yml"));
+        generalConfig = plugin.getConfig();
+        skullCache = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "skull_cache.yml"));
+        defaultFoodLevel = new FoodLevel(getConfigValue("default-hunger-level", true), getConfigValue("default-saturation-level", true));
     }
 
     public static String getVersion() {

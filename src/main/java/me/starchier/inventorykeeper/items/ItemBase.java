@@ -26,6 +26,8 @@ public class ItemBase {
     private final EntitiesNameFilter entitiesNameFilter;
     private final HashMap<String, Boolean> enabledDeathType = new HashMap<>();
     private final String deathMessage;
+    private final FoodLevel foodLevel;
+
 
     public ItemBase(String name, ItemHandler itemHandler, PluginHandler pluginHandler) {
         this.name = name;
@@ -43,6 +45,7 @@ public class ItemBase {
         removeItemsWithLore = pluginHandler.getList(name + ".items-with-lore-to-be-removed-on-death", false);
         priority = pluginHandler.itemsConfig.getInt("items." + name + ".priority", 1);
         deathMessage = pluginHandler.getConfigValue(name + ".death-message", false);
+        foodLevel = new FoodLevel(pluginHandler.getConfigValue(name + ".hunger-level", false), pluginHandler.getConfigValue(name + ".saturation-level", false));
         Map<String, Object> typeList = pluginHandler.itemsConfig.getConfigurationSection("items." + name + ".enabled-death-type").getValues(false);
         for (Map.Entry<String, Object> entry : typeList.entrySet()) {
             try {
@@ -117,6 +120,10 @@ public class ItemBase {
 
     public HashMap<String, Boolean> getEnabledDeathType() {
         return enabledDeathType;
+    }
+
+    public FoodLevel getFoodLevel() {
+        return foodLevel;
     }
 
 }

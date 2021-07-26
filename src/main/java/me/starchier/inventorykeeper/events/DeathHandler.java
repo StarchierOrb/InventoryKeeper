@@ -59,6 +59,10 @@ public class DeathHandler implements Listener {
         if (keepInv) {
             return;
         }
+
+        PlayerStorage.setFoodLevel(evt.getEntity(), evt.getEntity().getFoodLevel());
+        PlayerStorage.setSaturationLevel(evt.getEntity(), (int) evt.getEntity().getSaturation());
+
         //Shared list
         List<String> passedItems = new ArrayList<>();
         String playerWorld = evt.getEntity().getWorld().getName();

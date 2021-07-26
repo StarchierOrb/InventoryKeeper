@@ -59,6 +59,8 @@ public class GeneralConfig {
         public static final ConfigElement<Boolean> GALACTICRAFT_MOD_SUPPORT = new ConfigElement<>("settings.galacticraft-mod-support", true);
         public static final ConfigElement<Boolean> CLEAR_VANISHING_CURSE_ITEMS = new ConfigElement<>("settings.clear-vanishing-curse-items", true);
         public static final ConfigElement<Boolean> DROP_BINDING_CURSE_ITEMS = new ConfigElement<>("settings.drop-binding-curse-items", false);
+        public static final ConfigElement<String> HUNGER_LEVEL = new ConfigElement<>("settings.default-hunger-level", "set,10");
+        public static final ConfigElement<String> SATURATION_LEVEL = new ConfigElement<>("settings.default-saturation-level", "set,0,5");
         public static final ConfigElement<List<String>> RUN_COMMANDS_ON_DEATH_IF_DROPS = new ConfigElement<>("settings.run-commands-on-death-if-drops", Arrays.asList(
                 "[OP]fly off"
         ));

@@ -9,11 +9,15 @@ import java.util.Set;
 
 public class PlayerStorage {
     //Storage the death cause for player
-    public static Map<Player, EntityDamageEvent.DamageCause> deathType = new HashMap<>();
+    public static HashMap<Player, EntityDamageEvent.DamageCause> deathType = new HashMap<>();
     //Storage the killer for a player
-    public static Map<Player, String> killerMap = new HashMap<>();
+    public static HashMap<Player, String> killerMap = new HashMap<>();
     //Storage if any items are consumed, return null if drops
-    public static Map<Player, String> consumeMap = new HashMap<>();
+    public static HashMap<Player, String> consumeMap = new HashMap<>();
+    //Storage players' food level
+    public static HashMap<Player, Integer> foodLevel = new HashMap<>();
+    //Storage players' saturation level
+    public static HashMap<Player, Integer> saturationLevel = new HashMap<>();
 
     public static void setDeathType(Player player, EntityDamageEvent.DamageCause cause) {
         deathType.remove(player);
@@ -23,6 +27,30 @@ public class PlayerStorage {
     public static void clearPlayer(Player player) {
         //Should remove on player respawn.
         deathType.remove(player);
+    }
+
+    public static int getFoodLevel(Player player) {
+        return foodLevel.get(player);
+    }
+
+    public static int getSaturationLevel(Player player) {
+        return saturationLevel.get(player);
+    }
+
+    public static void setFoodLevel(Player player, int amount) {
+        foodLevel.put(player, amount);
+    }
+
+    public static void setSaturationLevel(Player player, int amount) {
+        saturationLevel.put(player, amount);
+    }
+
+    public static void removeFoodLevel(Player player) {
+        foodLevel.remove(player);
+    }
+
+    public static void removeSaturationLevel(Player player) {
+        saturationLevel.remove(player);
     }
 
     public static EntityDamageEvent.DamageCause getDeathCause(Player player) {
