@@ -29,7 +29,7 @@ public class ConversionUtil {
         }
         plugin.getLogger().info(MessagesUtil.getMessage("converting"));
         try {
-            Files.copy(config.toPath(), new File(plugin.getDataFolder(), "config_old.yml").toPath());
+            Files.copy(config.toPath(), new File(plugin.getDataFolder(), "config.yml.old").toPath());
             File itemsFile = new File(plugin.getDataFolder(), "items.yml");
             if (!itemsFile.exists() && itemsFile.createNewFile()) {
                 FileConfiguration data = YamlConfiguration.loadConfiguration(itemsFile);
@@ -95,7 +95,7 @@ public class ConversionUtil {
         plugin.getLogger().info(MessagesUtil.getMessage("converting-data"));
         HashMap<String, Object> dataMap = (HashMap<String, Object>) data.getConfigurationSection("playerdata").getValues(false);
         try {
-            Files.copy(dataFile.toPath(), new File(plugin.getDataFolder(), "data_old.yml").toPath());
+            Files.copy(dataFile.toPath(), new File(plugin.getDataFolder(), "data.yml.old").toPath());
             data.set("playerdata", new HashMap<>());
             for (Map.Entry<String, Object> e : dataMap.entrySet()) {
                 data.set("playerdata." + e.getKey() + ".default", e.getValue());

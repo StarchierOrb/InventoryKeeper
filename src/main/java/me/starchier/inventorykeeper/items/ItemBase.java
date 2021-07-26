@@ -14,6 +14,7 @@ public class ItemBase {
     private final ItemStack item;
     private final boolean saveExp;
     private final String expLostPercentage;
+    private final String displayName;
     private final List<String> disabledWorlds;
     private final List<String> runCommandsOnDeath;
     private final List<String> runRandomCommandsOnDeath;
@@ -29,6 +30,7 @@ public class ItemBase {
     public ItemBase(String name, ItemHandler itemHandler, PluginHandler pluginHandler) {
         this.name = name;
         item = itemHandler.buildItem(name);
+        displayName = pluginHandler.getConfigValue(name + ".name", false);
         saveExp = pluginHandler.getBooleanConfigValue(name + ".save-exp", false);
         expLostPercentage = pluginHandler.getConfigValue(name + ".exp-lose-percentage", false);
         disabledWorlds = pluginHandler.getDisabledWorlds(name);
@@ -103,6 +105,10 @@ public class ItemBase {
 
     public EntitiesListFilter getEntitiesListFilter() {
         return entitiesListFilter;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public EntitiesNameFilter getEntitiesNameFilter() {
