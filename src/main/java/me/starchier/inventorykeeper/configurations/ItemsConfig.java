@@ -29,7 +29,7 @@ public class ItemsConfig {
             config.addDefault("items.default.save-exp", false);
             config.addDefault("items.default.exp-lose-percentage", "10-30");
             config.addDefault("items.default.hunger-level", "reset");
-            config.addDefault("items.default.saturation-level", "reset");
+            config.addDefault("items.default.saturation-level", "set,3,7");
             config.addDefault("items.default.disabled-worlds", new ArrayList<>());
             config.addDefault("items.default.run-commands-on-death", new ArrayList<>());
             config.addDefault("items.default.run-random-commands-on-death", new ArrayList<>());

@@ -40,6 +40,8 @@ public class ConversionUtil {
                 data.set("items.default.item-enchantments", cfg.getList("settings.keep-inventory-item.item-enchantments"));
                 data.set("items.default.save-exp", cfg.getBoolean("settings.save-exp", false));
                 data.set("items.default.exp-lose-percentage", cfg.getString("settings.exp-lose-percentage", "10-30"));
+                data.set("items.default.hunger-level", "reset");
+                data.set("items.default.saturation-level", "set,3,7");
                 data.set("items.default.disabled-worlds", cfg.getList("settings.disabled-worlds"));
                 data.set("items.default.run-commands-on-death", cfg.getList("settings.run-commands-on-death"));
                 data.set("items.default.run-random-commands-on-death", cfg.getList("settings.run-random-commands-on-death"));
