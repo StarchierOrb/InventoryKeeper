@@ -289,4 +289,5 @@ public class DeathHandler implements Listener {
         Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
         Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
     }
+
 }
