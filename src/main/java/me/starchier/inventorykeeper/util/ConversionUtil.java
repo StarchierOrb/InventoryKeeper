@@ -24,7 +24,7 @@ public class ConversionUtil {
             return;
         }
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(config);
-        if (cfg.getConfigurationSection("settings").getValues(true).isEmpty()) {
+        if (cfg.getConfigurationSection("settings.keep-inventory-item").getValues(true).isEmpty()) {
             return;
         }
         plugin.getLogger().info(MessagesUtil.getMessage("converting"));
