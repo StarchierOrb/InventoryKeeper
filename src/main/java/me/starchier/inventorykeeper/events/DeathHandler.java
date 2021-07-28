@@ -30,6 +30,8 @@ public class DeathHandler implements Listener {
     private final PluginHandler pluginHandler;
     private final ExpHandler expHandler;
 
+    private boolean keep = false;
+
     public DeathHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
         this.plugin = plugin;
         this.dataManager = dataManager;
@@ -210,6 +212,7 @@ public class DeathHandler implements Listener {
             commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
             commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
             evt.setKeepInventory(true);
+            keep = true;
             if (!PluginHandler.IS_LEGACY) {
                 evt.getDrops().clear();
             }
@@ -288,6 +291,15 @@ public class DeathHandler implements Listener {
         Debugger.logDebugMessage(evt.getEntity().getName() + " : final death status:");
         Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
         Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void forceKeepInventory(PlayerDeathEvent evt) {
+        //force override the result if other plugin changed it
+        if (keep && !evt.getKeepInventory()) {
+            Debugger.logDebugMessage("override result to keep inventory.");
+            evt.setKeepInventory(true);
+        }
     }
 
 }

@@ -61,6 +61,6 @@ public class RespawnHandler implements Listener {
                 PlayerStorage.removeFoodLevel(player);
                 PlayerStorage.removeSaturationLevel(player);
             }
-        }.runTaskLater(plugin, 20);
+        }.runTaskLater(plugin, 15);
     }
 }

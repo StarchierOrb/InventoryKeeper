@@ -1,5 +1,6 @@
 package me.starchier.inventorykeeper.i18n;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class MessagesUtil {
@@ -50,4 +51,5 @@ public class MessagesUtil {
             return Collections.singletonList(key);
         }
     }
+
 }
