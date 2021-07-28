@@ -144,7 +144,8 @@ public class ItemHandler {
                         enchantmentWrapper = new EnchantmentWrapper(s.split("-")[0].toLowerCase());
                         item.addUnsafeEnchantment(enchantmentWrapper.getEnchantment(),
                                 Integer.parseInt(s.split("-")[1]));
-                    } catch (Exception ignored) {
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }

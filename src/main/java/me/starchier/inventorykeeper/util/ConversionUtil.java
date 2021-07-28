@@ -2,6 +2,7 @@ package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
+import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -24,7 +25,11 @@ public class ConversionUtil {
             return;
         }
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(config);
-        if (cfg.getConfigurationSection("settings.keep-inventory-item").getValues(true).isEmpty()) {
+        try {
+            if (cfg.getConfigurationSection("settings.keep-inventory-item").getValues(true).isEmpty()) {
+                return;
+            }
+        } catch (NullPointerException e) {
             return;
         }
         plugin.getLogger().info(MessagesUtil.getMessage("converting"));
