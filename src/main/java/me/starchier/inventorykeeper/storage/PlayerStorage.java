@@ -30,11 +30,19 @@ public class PlayerStorage {
     }
 
     public static int getFoodLevel(Player player) {
-        return foodLevel.get(player);
+        try {
+            return foodLevel.get(player);
+        } catch (NullPointerException e) {
+            return 20;
+        }
     }
 
     public static int getSaturationLevel(Player player) {
-        return saturationLevel.get(player);
+        try {
+            return saturationLevel.get(player);
+        } catch (NullPointerException e) {
+            return 5;
+        }
     }
 
     public static void setFoodLevel(Player player, int amount) {
@@ -46,11 +54,17 @@ public class PlayerStorage {
     }
 
     public static void removeFoodLevel(Player player) {
-        foodLevel.remove(player);
+        try {
+            foodLevel.remove(player);
+        } catch (NullPointerException ignored) {
+        }
     }
 
     public static void removeSaturationLevel(Player player) {
-        saturationLevel.remove(player);
+        try {
+            saturationLevel.remove(player);
+        } catch (NullPointerException ignored) {
+        }
     }
 
     public static EntityDamageEvent.DamageCause getDeathCause(Player player) {

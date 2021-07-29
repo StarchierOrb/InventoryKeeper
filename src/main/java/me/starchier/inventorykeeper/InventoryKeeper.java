@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public final class InventoryKeeper extends JavaPlugin {
     public static boolean papiEnabled = false;

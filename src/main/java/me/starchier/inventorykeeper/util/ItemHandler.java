@@ -128,7 +128,7 @@ public class ItemHandler {
             }
         }
         item.setItemMeta(data);
-        List<String> enchantments = pluginHandler.getList(name + "item-enchantments", false);
+        List<String> enchantments = pluginHandler.getList(name + ".item-enchantments", false);
         if (!enchantments.isEmpty()) {
             if (PluginHandler.IS_LEGACY) {
                 for (String s : enchantments) {
@@ -144,8 +144,7 @@ public class ItemHandler {
                         enchantmentWrapper = new EnchantmentWrapper(s.split("-")[0].toLowerCase());
                         item.addUnsafeEnchantment(enchantmentWrapper.getEnchantment(),
                                 Integer.parseInt(s.split("-")[1]));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception ignored) {
                     }
                 }
             }

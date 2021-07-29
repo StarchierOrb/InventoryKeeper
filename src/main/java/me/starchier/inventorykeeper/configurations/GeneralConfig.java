@@ -79,6 +79,7 @@ public class GeneralConfig {
 
 
         //Messages
+        public static final ConfigElement<String> LOST_EXP = new ConfigElement<>("messages.lost-exp", MessagesUtil.getConfigValue("lost-exp"));
         public static final ConfigElement<String> CONFIG_RELOADED = new ConfigElement<>("messages.reloaded-config", MessagesUtil.getConfigValue("reloaded-config"));
         public static final ConfigElement<String> RECEIVED_ITEM = new ConfigElement<>("messages.received-item", MessagesUtil.getConfigValue("received-item"));
         public static final ConfigElement<String> RECEIVED_VIRTUAL_ITEM = new ConfigElement<>("messages.received-virtual-item", MessagesUtil.getConfigValue("received-virtual-item"));

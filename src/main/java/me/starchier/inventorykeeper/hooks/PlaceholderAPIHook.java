@@ -3,6 +3,7 @@ package me.starchier.inventorykeeper.hooks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.util.DataManager;
+import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.PluginHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -88,15 +89,20 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             if (index == -1) {
                 if (pluginHandler.itemNames.contains(element)) {
                     return String.valueOf(dataManager.getVirtualCount(player, element));
+                } else {
+                    return null;
                 }
             }
-            String playerName = element.substring(index);
+            String playerName = element.substring(index).replace(",", "");
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.getName().equals(playerName)) {
-                    return String.valueOf(dataManager.getVirtualCount(p, element.replace(playerName, "")));
+                    String itemName = element.replace("," + playerName, "");
+                    if (!pluginHandler.itemNames.contains(itemName)) {
+                        return null;
+                    }
+                    return String.valueOf(dataManager.getVirtualCount(p, itemName));
                 }
             }
-            return "-1";
         }
 
         // We return null if an invalid placeholder (f.e. %someplugin_placeholder3%)

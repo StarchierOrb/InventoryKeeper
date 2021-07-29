@@ -10,6 +10,6 @@ public class Debugger {
         if (!enabledDebug) {
             return;
         }
-        Bukkit.getLogger().info(" [DEBUG] " + ChatColor.AQUA + message);
+        Bukkit.getLogger().info("[INVKEEPER-DEBUG] " + ChatColor.AQUA + message);
     }
 }

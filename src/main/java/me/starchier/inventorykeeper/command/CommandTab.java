@@ -115,7 +115,7 @@ public class CommandTab implements TabExecutor {
                         int total = dataManager.addVirtual((Player) sender, count, item.getName());
                         sender.sendMessage(pluginHandler.getMessage("received-virtual-item")
                                 .replace("%amount%", String.valueOf(count))
-                                .replace("%item%", item.getName())
+                                .replace("%item%", item.getDisplayName())
                                 .replace("%total%", String.valueOf(total)));
                         return true;
                     }
@@ -175,7 +175,7 @@ public class CommandTab implements TabExecutor {
                                     .replace("%total%", String.valueOf(total)));
                             return true;
                         }
-                        sender.sendMessage(String.format(pluginHandler.getMessage("player-not-found"), args[2]));
+                        sender.sendMessage(String.format(pluginHandler.getMessage("player-not-found"), args[3]));
                         return true;
                     }
                     commandUtil.giveItem(sender, args);
@@ -242,7 +242,7 @@ public class CommandTab implements TabExecutor {
                     }
                     Player target = commandUtil.findPlayer(args[1]);
                     if (target != null) {
-                        if (pluginHandler.itemNames.contains(args[2])) {
+                        if (!pluginHandler.itemNames.contains(args[2])) {
                             sender.sendMessage(pluginHandler.getMessage("invalid-item"));
                             return true;
                         }

@@ -36,7 +36,8 @@ public class CommandUtil {
             sender.sendMessage(String.format(pluginHandler.getMessage("item-not-exist"), args[2]));
             return;
         }
-        ItemStack item = pluginHandler.getItemBase(args[2]).getItem();
+        ItemBase base = pluginHandler.getItemBase(args[2]);
+        ItemStack item = base.getItem();
         if (args.length >= 5) {
             if (pluginHandler.isNumber(args[4])) {
                 item.setAmount(Integer.parseInt(args[4]));
@@ -48,7 +49,10 @@ public class CommandUtil {
             item.setAmount(1);
         }
         target.getWorld().dropItem(target.getLocation(), item);
-        sender.sendMessage(pluginHandler.getMessage("gave-item").replace("%s", String.valueOf(item.getAmount())).replace("%p", target.getDisplayName()));
-        target.sendMessage(pluginHandler.getMessage("received-item").replace("%amount%", String.valueOf(item.getAmount())));
+        sender.sendMessage(pluginHandler.getMessage("gave-item").replace("%amount%", String.valueOf(item.getAmount())).replace("%player%", target.getDisplayName())
+                .replace("%item%", base.getDisplayName()));
+        target.sendMessage(pluginHandler.getMessage("received-item")
+                .replace("%amount%", String.valueOf(item.getAmount()))
+                .replace("%item%", base.getDisplayName()));
     }
 }

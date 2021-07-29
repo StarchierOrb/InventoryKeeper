@@ -30,7 +30,7 @@ public class DeathHandler implements Listener {
     private final PluginHandler pluginHandler;
     private final ExpHandler expHandler;
 
-    private boolean keep = false;
+    private boolean keep;
 
     public DeathHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
         this.plugin = plugin;
@@ -64,6 +64,7 @@ public class DeathHandler implements Listener {
 
         PlayerStorage.setFoodLevel(evt.getEntity(), evt.getEntity().getFoodLevel());
         PlayerStorage.setSaturationLevel(evt.getEntity(), (int) evt.getEntity().getSaturation());
+        keep = false;
 
         //Shared list
         List<String> passedItems = new ArrayList<>();
@@ -171,7 +172,7 @@ public class DeathHandler implements Listener {
         if (consumeType == CONSUME_NONE) {
             PlayerStorage.removeKiller(evt.getEntity());
             PlayerStorage.clearPlayer(evt.getEntity());
-            PlayerStorage.setConsumed(evt.getEntity(), null);
+            PlayerStorage.setConsumed(evt.getEntity(), "");
             evt.setKeepLevel(false);
             evt.setDroppedExp(Math.min(evt.getEntity().getLevel() * 7, 100));
             commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops", true);
@@ -278,11 +279,15 @@ public class DeathHandler implements Listener {
                 evt.setKeepLevel(false);
                 evt.setDroppedExp(0);
                 int lost = expHandler.loseExp(evt, consumeItemNames[consumeType]);
-                evt.getEntity().sendMessage(String.format(pluginHandler.getMessage("lost-exp"), lost, (evt.getEntity().getLevel() - lost)));
+                evt.getEntity().sendMessage(pluginHandler.getMessage("lost-exp")
+                        .replace("%amount%", String.valueOf(lost))
+                        .replace("%total%", String.valueOf(evt.getEntity().getLevel() - lost)));
             }
             Debugger.logDebugMessage(evt.getEntity().getName() + " death status:");
             Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
             Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
+            Debugger.logDebugMessage("new level: " + evt.getNewLevel());
+            Debugger.logDebugMessage("old level: " + evt.getEntity().getLevel());
         }
     }
 
@@ -291,6 +296,8 @@ public class DeathHandler implements Listener {
         Debugger.logDebugMessage(evt.getEntity().getName() + " : final death status:");
         Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
         Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
+        Debugger.logDebugMessage("new level: " + evt.getNewLevel());
+        Debugger.logDebugMessage("old level: " + evt.getEntity().getLevel());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

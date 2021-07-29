@@ -26,13 +26,12 @@ public class RespawnHandler implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent evt) {
         String consumedItem;
-        try {
-            consumedItem = PlayerStorage.getConsumed(evt.getPlayer());
-        } catch (NullPointerException e) {
+        consumedItem = PlayerStorage.getConsumed(evt.getPlayer());
+        if (consumedItem == null) {
             Debugger.logDebugMessage(evt.getPlayer().getName() + " Respawn: no death cause");
             return;
         }
-        if (consumedItem == null) {
+        if (consumedItem.equals("")) {
             commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn-if-drops", true);
             commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn-if-drops", true);
             int finalFood = pluginHandler.defaultFoodLevel.getFinalFoodLevel(PlayerStorage.getFoodLevel(evt.getPlayer()));
