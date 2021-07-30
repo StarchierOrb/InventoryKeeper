@@ -97,12 +97,12 @@ public class CommandTab implements TabExecutor {
                         sender.sendMessage(pluginHandler.getMessage("get-usage"));
                         return true;
                     }
+                    ItemBase itemBase = pluginHandler.getItemBase(args[2]);
+                    if (itemBase == null) {
+                        sender.sendMessage(pluginHandler.getMessage("invalid-item"));
+                        return true;
+                    }
                     if ("v".equals(args[1])) {
-                        ItemBase item = pluginHandler.getItemBase(args[2]);
-                        if (item == null) {
-                            sender.sendMessage(pluginHandler.getMessage("invalid-item"));
-                            return true;
-                        }
                         int count = 0;
                         if (args.length < 4) {
                             count = 1;
@@ -113,16 +113,11 @@ public class CommandTab implements TabExecutor {
                             }
                             count = Integer.parseInt(args[3]);
                         }
-                        int total = dataManager.addVirtual((Player) sender, count, item.getName());
+                        int total = dataManager.addVirtual((Player) sender, count, itemBase.getName());
                         sender.sendMessage(pluginHandler.getMessage("received-virtual-item")
                                 .replace("%amount%", String.valueOf(count))
-                                .replace("%item%", item.getDisplayName())
+                                .replace("%item%", itemBase.getDisplayName())
                                 .replace("%total%", String.valueOf(total)));
-                        return true;
-                    }
-                    ItemBase itemBase = pluginHandler.getItemBase(args[2]);
-                    if (itemBase == null) {
-                        sender.sendMessage(pluginHandler.getMessage("invalid-item"));
                         return true;
                     }
                     ItemStack item = itemBase.getItem();
@@ -146,6 +141,10 @@ public class CommandTab implements TabExecutor {
                         sender.sendMessage(pluginHandler.getMessage("give-usage"));
                         return true;
                     }
+                    if (!pluginHandler.itemNames.contains(args[2])) {
+                        sender.sendMessage(pluginHandler.getMessage("invalid-item"));
+                        return true;
+                    }
                     if ("v".equals(args[1])) {
                         int count = 0;
                         if (args.length < 5) {
@@ -159,10 +158,6 @@ public class CommandTab implements TabExecutor {
                         }
                         Player target = commandUtil.findPlayer(args[3]);
                         if (target != null) {
-                            if (!pluginHandler.itemNames.contains(args[2])) {
-                                sender.sendMessage(pluginHandler.getMessage("invalid-item"));
-                                return true;
-                            }
                             int total = dataManager.addVirtual(target, count, args[2]);
                             String name = pluginHandler.getItemBase(args[2]).getDisplayName();
                             sender.sendMessage(pluginHandler.getMessage("give-virtual-item")
