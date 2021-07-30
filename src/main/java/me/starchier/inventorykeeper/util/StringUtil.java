@@ -17,6 +17,7 @@ public class StringUtil {
             while (matcher.find()) {
                 String hexCode = str.substring(matcher.start(), matcher.end());
                 str = str.replace(hexCode, ChatColor.of(hexCode).toString());
+                matcher = hexPattern.matcher(str);
             }
         } catch (Exception ignored) {
         }

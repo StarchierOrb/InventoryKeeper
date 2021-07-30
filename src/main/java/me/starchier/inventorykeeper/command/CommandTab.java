@@ -82,9 +82,10 @@ public class CommandTab implements TabExecutor {
                     pluginHandler.loadItems(itemHandler);
                     plugin.getLogger().info(MessagesUtil.getMessage("reloading-player-data"));
                     dataManager.reloadData();
+                    dataManager.startupProcess();
                     Debugger.enabledDebug = pluginHandler.getBooleanConfigValue("debug", true);
                     sender.sendMessage(ChatColor.GOLD + "(!)" + ChatColor.GREEN + String.format(MessagesUtil.getMessage("load-item-completed"), pluginHandler.currentItems.size()));
-                    sender.sendMessage(MessagesUtil.getMessage("reloaded-config"));
+                    sender.sendMessage(pluginHandler.getMessage("reloaded-config"));
                     return true;
                 }
                 case "get": {
