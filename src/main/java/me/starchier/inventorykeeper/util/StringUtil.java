@@ -19,7 +19,7 @@ public class StringUtil {
                 str = str.replace(hexCode, ChatColor.of(hexCode).toString());
                 matcher = hexPattern.matcher(str);
             }
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
         }
         return str;
     }
