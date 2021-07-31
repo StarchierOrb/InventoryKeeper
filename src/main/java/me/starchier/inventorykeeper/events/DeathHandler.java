@@ -4,6 +4,7 @@ import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
+import me.starchier.inventorykeeper.storage.PlayerInventoryStorage;
 import me.starchier.inventorykeeper.storage.PlayerStorage;
 import me.starchier.inventorykeeper.util.DataManager;
 import me.starchier.inventorykeeper.util.Debugger;
@@ -184,11 +185,7 @@ public class DeathHandler implements Listener {
         commandExec.doKeepModInventory(evt.getEntity());
         commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
         commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
-        evt.setKeepInventory(true);
         keep = true;
-        if (!PluginHandler.IS_LEGACY) {
-            evt.getDrops().clear();
-        }
         boolean clearVanish = pluginHandler.getBooleanConfigValue("clear-vanishing-curse-items", true);
         boolean dropBinding = pluginHandler.getBooleanConfigValue("drop-binding-curse-items", true);
         if (consumeType == CONSUME_PHYSICAL) {
@@ -243,14 +240,33 @@ public class DeathHandler implements Listener {
             }
             i++;
         }
+        if (pluginHandler.compatInventory) {
+            PlayerStorage.saveInventory(evt.getEntity(), new PlayerInventoryStorage(evt.getEntity()));
+            evt.getEntity().getInventory().clear();
+            evt.getEntity().getInventory().setArmorContents(null);
+        } else {
+            evt.setKeepInventory(true);
+        }
+        evt.getDrops().clear();
         evt.getEntity().sendMessage(pluginHandler.getConfigValue(consumeItemNames[consumeType] + ".death-message", false));
         if (pluginHandler.getBooleanConfigValue(consumeItemNames[consumeType] + ".save-exp", false)) {
-            evt.setKeepLevel(true);
-            evt.setDroppedExp(0);
+            if (pluginHandler.compatLevel) {
+                PlayerStorage.saveLevel(evt.getEntity(), evt.getEntity().getLevel());
+                evt.setKeepLevel(false);
+                evt.setDroppedExp(0);
+                evt.setNewLevel(0);
+            } else {
+                evt.setKeepLevel(true);
+                evt.setDroppedExp(0);
+            }
         } else {
+            int lost = expHandler.loseExp(evt, consumeItemNames[consumeType]);
+            if (pluginHandler.compatLevel) {
+                PlayerStorage.saveLevel(evt.getEntity(), evt.getEntity().getLevel() - lost);
+                evt.setNewLevel(0);
+            }
             evt.setKeepLevel(false);
             evt.setDroppedExp(0);
-            int lost = expHandler.loseExp(evt, consumeItemNames[consumeType]);
             evt.getEntity().sendMessage(pluginHandler.getMessage("lost-exp")
                     .replace("%amount%", String.valueOf(lost))
                     .replace("%total%", String.valueOf(evt.getEntity().getLevel() - lost)));
@@ -258,6 +274,8 @@ public class DeathHandler implements Listener {
         Debugger.logDebugMessage(evt.getEntity().getName() + " death status:");
         Debugger.logDebugMessage("keep level: " + evt.getKeepLevel());
         Debugger.logDebugMessage("keep inventory: " + evt.getKeepInventory());
+        Debugger.logDebugMessage("compat inventory: " + pluginHandler.compatInventory);
+        Debugger.logDebugMessage("compat exp: " + pluginHandler.compatLevel);
         Debugger.logDebugMessage("new level: " + evt.getNewLevel());
         Debugger.logDebugMessage("old level: " + evt.getEntity().getLevel());
     }
@@ -286,7 +304,7 @@ public class DeathHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void forceKeepInventory(PlayerDeathEvent evt) {
         //force override the result if other plugin changed it
-        if (keep && !evt.getKeepInventory()) {
+        if (keep && !pluginHandler.compatInventory && !evt.getKeepInventory()) {
             Debugger.logDebugMessage("override result to keep inventory.");
             evt.setKeepInventory(true);
         }

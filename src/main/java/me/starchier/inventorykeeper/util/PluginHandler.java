@@ -24,6 +24,8 @@ public class PluginHandler {
     public List<ItemBase> currentItems = null;
     public List<String> itemNames = null;
     public FoodLevel defaultFoodLevel;
+    public boolean compatInventory;
+    public boolean compatLevel;
 
     public PluginHandler(InventoryKeeper plugin) {
         this.plugin = plugin;
@@ -34,6 +36,8 @@ public class PluginHandler {
         generalConfig = plugin.getConfig();
         skullCache = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "skull_cache.yml"));
         defaultFoodLevel = new FoodLevel(getConfigValue("default-hunger-level", true), getConfigValue("default-saturation-level", true));
+        compatInventory = getBooleanConfigValue("compatibility-mode.inventory", true);
+        compatLevel = getBooleanConfigValue("compatibility-mode.exp", true);
     }
 
     public static String getVersion() {

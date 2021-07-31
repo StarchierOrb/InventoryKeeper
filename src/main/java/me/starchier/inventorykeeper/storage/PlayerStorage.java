@@ -2,8 +2,11 @@ package me.starchier.inventorykeeper.storage;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +21,10 @@ public class PlayerStorage {
     public static HashMap<Player, Integer> foodLevel = new HashMap<>();
     //Storage players' saturation level
     public static HashMap<Player, Integer> saturationLevel = new HashMap<>();
+    //Storage players' inventory
+    public static HashMap<Player, PlayerInventoryStorage> inventory = new HashMap<>();
+    //Storage players' level
+    public static HashMap<Player, Integer> playerLevels = new HashMap<>();
 
     public static void setDeathType(Player player, EntityDamageEvent.DamageCause cause) {
         deathType.remove(player);
@@ -109,5 +116,29 @@ public class PlayerStorage {
 
     public static void resetConsumed(Player player) {
         consumeMap.remove(player);
+    }
+
+    public static void saveInventory(Player player, PlayerInventoryStorage items) {
+        inventory.put(player, items);
+    }
+
+    public static void removeInventory(Player player) {
+        inventory.remove(player);
+    }
+
+    public static PlayerInventoryStorage getInventory(Player player) {
+        return inventory.get(player);
+    }
+
+    public static int getLevel(Player player) {
+        return playerLevels.get(player);
+    }
+
+    public static void saveLevel(Player player, int level) {
+        playerLevels.put(player, level);
+    }
+
+    public static void removeLevel(Player player) {
+        playerLevels.remove(player);
     }
 }

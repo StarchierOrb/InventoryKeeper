@@ -3,6 +3,7 @@ package me.starchier.inventorykeeper.events;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.items.FoodLevel;
+import me.starchier.inventorykeeper.storage.PlayerInventoryStorage;
 import me.starchier.inventorykeeper.storage.PlayerStorage;
 import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.PluginHandler;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class RespawnHandler implements Listener {
@@ -41,6 +43,7 @@ public class RespawnHandler implements Listener {
             PlayerStorage.resetConsumed(evt.getPlayer());
             return;
         }
+        restoreInventory(evt.getPlayer());
         commandExec.doRestoreModInventory(evt.getPlayer());
         commandExec.runCommands(evt.getPlayer(), false, consumedItem + ".run-commands-on-respawn", false);
         commandExec.runRandomCommands(evt.getPlayer(), false, consumedItem + ".run-random-commands-on-respawn", false);
@@ -61,5 +64,26 @@ public class RespawnHandler implements Listener {
                 PlayerStorage.removeSaturationLevel(player);
             }
         }.runTaskLater(plugin, 15);
+    }
+
+    private void restoreInventory(Player player) {
+        if (!pluginHandler.compatInventory) {
+            return;
+        }
+        new BukkitRunnable() {
+            public void run() {
+                PlayerInventoryStorage storage = PlayerStorage.getInventory(player);
+                ItemStack[] items = storage.getItems();
+                for (int i = 0; i < player.getInventory().getSize(); i++) {
+                    player.getInventory().setItem(i, items[i]);
+                }
+                player.getInventory().setArmorContents(storage.getArmor());
+                Debugger.logDebugMessage("restored " + player.getName() + "'s inventory");
+                player.setLevel(PlayerStorage.getLevel(player));
+                Debugger.logDebugMessage("restored " + player.getName() + "'s level");
+                PlayerStorage.removeLevel(player);
+                PlayerStorage.removeInventory(player);
+            }
+        }.runTaskLater(plugin, 12);
     }
 }
