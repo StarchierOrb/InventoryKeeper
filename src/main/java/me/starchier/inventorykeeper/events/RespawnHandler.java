@@ -63,27 +63,28 @@ public class RespawnHandler implements Listener {
                 PlayerStorage.removeFoodLevel(player);
                 PlayerStorage.removeSaturationLevel(player);
             }
-        }.runTaskLater(plugin, 15);
+        }.runTaskLater(plugin, 10);
     }
 
     private void restoreInventory(Player player) {
-        if (!pluginHandler.compatInventory) {
-            return;
-        }
         new BukkitRunnable() {
             public void run() {
-                PlayerInventoryStorage storage = PlayerStorage.getInventory(player);
-                ItemStack[] items = storage.getItems();
-                for (int i = 0; i < player.getInventory().getSize(); i++) {
-                    player.getInventory().setItem(i, items[i]);
+                if (pluginHandler.compatInventory) {
+                    PlayerInventoryStorage storage = PlayerStorage.getInventory(player);
+                    ItemStack[] items = storage.getItems();
+                    for (int i = 0; i < player.getInventory().getSize(); i++) {
+                        player.getInventory().setItem(i, items[i]);
+                    }
+                    player.getInventory().setArmorContents(storage.getArmor());
+                    Debugger.logDebugMessage("restored " + player.getName() + "'s inventory");
+                    PlayerStorage.removeInventory(player);
                 }
-                player.getInventory().setArmorContents(storage.getArmor());
-                Debugger.logDebugMessage("restored " + player.getName() + "'s inventory");
-                player.setLevel(PlayerStorage.getLevel(player));
-                Debugger.logDebugMessage("restored " + player.getName() + "'s level");
-                PlayerStorage.removeLevel(player);
-                PlayerStorage.removeInventory(player);
+                if (pluginHandler.compatLevel) {
+                    player.setLevel(PlayerStorage.getLevel(player));
+                    Debugger.logDebugMessage("restored " + player.getName() + "'s level");
+                    PlayerStorage.removeLevel(player);
+                }
             }
-        }.runTaskLater(plugin, 12);
+        }.runTaskLater(plugin, 14);
     }
 }
