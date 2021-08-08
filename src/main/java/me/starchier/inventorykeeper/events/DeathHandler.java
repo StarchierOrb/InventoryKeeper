@@ -32,7 +32,6 @@ public class DeathHandler implements Listener {
     private final PluginHandler pluginHandler;
     private final ExpHandler expHandler;
 
-    private boolean keep;
 
     public DeathHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
         this.plugin = plugin;
@@ -66,7 +65,7 @@ public class DeathHandler implements Listener {
 
         PlayerStorage.setFoodLevel(evt.getEntity(), evt.getEntity().getFoodLevel());
         PlayerStorage.setSaturationLevel(evt.getEntity(), (int) evt.getEntity().getSaturation());
-        keep = false;
+        PlayerStorage.isKeep.put(evt.getEntity(), false);
 
         //Shared list
         List<String> passedItems = new ArrayList<>();
@@ -169,6 +168,9 @@ public class DeathHandler implements Listener {
             PlayerStorage.removeKiller(evt.getEntity());
             PlayerStorage.clearPlayer(evt.getEntity());
             PlayerStorage.setConsumed(evt.getEntity(), "");
+            if (evt.getKeepInventory()) {
+                evt.setKeepInventory(false);
+            }
             evt.setKeepLevel(false);
             evt.setDroppedExp(Math.min(evt.getEntity().getLevel() * 7, 100));
             commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops", true);
@@ -185,7 +187,7 @@ public class DeathHandler implements Listener {
         commandExec.doKeepModInventory(evt.getEntity());
         commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
         commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
-        keep = true;
+        PlayerStorage.isKeep.put(evt.getEntity(), true);
         boolean clearVanish = pluginHandler.getBooleanConfigValue("clear-vanishing-curse-items", true);
         boolean dropBinding = pluginHandler.getBooleanConfigValue("drop-binding-curse-items", true);
         if (consumeType == CONSUME_PHYSICAL) {
@@ -303,11 +305,16 @@ public class DeathHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void forceKeepInventory(PlayerDeathEvent evt) {
+        boolean isKeep = PlayerStorage.isKeep.get(evt.getEntity());
         //force override the result if other plugin changed it
-        if (keep && !pluginHandler.compatInventory && !evt.getKeepInventory()) {
+        if (isKeep && !pluginHandler.compatInventory && !evt.getKeepInventory()) {
             Debugger.logDebugMessage("override result to keep inventory.");
             evt.setKeepInventory(true);
+        } else if (!isKeep && evt.getKeepInventory()) {
+            Debugger.logDebugMessage("override result to drop inventory");
+            evt.setKeepInventory(false);
         }
+        PlayerStorage.isKeep.remove(evt.getEntity());
     }
 
     public boolean processCondition(String itemName, Player player) {

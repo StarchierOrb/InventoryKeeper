@@ -25,6 +25,8 @@ public class PlayerStorage {
     public static HashMap<Player, PlayerInventoryStorage> inventory = new HashMap<>();
     //Storage players' level
     public static HashMap<Player, Integer> playerLevels = new HashMap<>();
+    //Storage players' status
+    public static HashMap<Player, Boolean> isKeep = new HashMap<>();
 
     public static void setDeathType(Player player, EntityDamageEvent.DamageCause cause) {
         deathType.remove(player);

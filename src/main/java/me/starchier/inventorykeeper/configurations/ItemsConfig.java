@@ -23,7 +23,7 @@ public class ItemsConfig {
                 config.addDefault("items.default.item-id", "STICK");
                 config.addDefault("items.default.name", MessagesUtil.getConfigValue("default-item-name"));
                 config.addDefault("items.default.item-name", MessagesUtil.getConfigValue("default-item-name"));
-                config.addDefault("items.default.item-lore", MessagesUtil.getConfigArrayValue("default-item-lore"));
+                config.addDefault("items.default.item-lore", MessagesUtil.getConfigArrayValue("config.default-item-lore"));
                 config.addDefault("items.default.item-enchantments", Collections.singletonList(
                         (PluginHandler.IS_LEGACY ? Enchantment.DURABILITY.getName() + "-10" : "unbreaking-10")
                 ));

@@ -49,11 +49,13 @@ public class PluginHandler {
     }
 
     public String getConfigValue(String path, boolean isGeneralConfig) {
+        String text;
         if (isGeneralConfig) {
-            return StringUtil.transform(ChatColor.translateAlternateColorCodes('&', generalConfig.getString("settings." + path, null)));
+            text = generalConfig.getString("settings." + path, null);
         } else {
-            return StringUtil.transform(ChatColor.translateAlternateColorCodes('&', itemsConfig.getString("items." + path, null)));
+            text = itemsConfig.getString("items." + path, null);
         }
+        return (text == null ? null : StringUtil.transform(ChatColor.translateAlternateColorCodes('&', text)));
     }
 
     public Boolean getBooleanConfigValue(String path, boolean isGeneralConfig) {
