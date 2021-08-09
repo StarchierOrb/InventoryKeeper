@@ -1,6 +1,8 @@
 package me.starchier.inventorykeeper.events;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
+import me.starchier.inventorykeeper.api.events.PlayerConsumeItemEvent;
+import me.starchier.inventorykeeper.api.events.PlayerDropInventoryEvent;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
@@ -10,6 +12,7 @@ import me.starchier.inventorykeeper.util.DataManager;
 import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.ExpHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
 import org.bukkit.enchantments.Enchantment;
@@ -175,6 +178,7 @@ public class DeathHandler implements Listener {
             evt.setDroppedExp(Math.min(evt.getEntity().getLevel() * 7, 100));
             commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops", true);
             commandExec.runRandomCommands(evt.getEntity(), true, "settings.run-random-commands-on-death-if-drops", true);
+            Bukkit.getServer().getPluginManager().callEvent(new PlayerDropInventoryEvent(evt.getEntity(), pluginHandler, dataManager));
             return;
         }
 
@@ -242,6 +246,8 @@ public class DeathHandler implements Listener {
             }
             i++;
         }
+        Bukkit.getServer().getPluginManager().callEvent(new PlayerConsumeItemEvent(evt.getEntity(), pluginHandler.getItemBase(consumeItemNames[consumeType]),
+                pluginHandler, dataManager));
         if (pluginHandler.compatInventory) {
             PlayerStorage.saveInventory(evt.getEntity(), new PlayerInventoryStorage(evt.getEntity()));
             evt.getEntity().getInventory().clear();
