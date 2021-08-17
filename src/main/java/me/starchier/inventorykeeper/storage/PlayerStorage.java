@@ -94,10 +94,9 @@ public class PlayerStorage {
         killerMap.remove(player);
     }
     public static String getKiller(Player player) {
-        Set<Map.Entry<Player, String>> p = killerMap.entrySet();
-        for (Map.Entry entry : p) {
+        for (Map.Entry<Player, String> entry : killerMap.entrySet()) {
             if (entry.getKey() == player) {
-                return entry.getValue().toString();
+                return entry.getValue();
             }
         }
         return null;

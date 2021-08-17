@@ -29,19 +29,8 @@ public class EntityDamageListener implements Listener {
         if(finalHealth>0) {
             return;
         }
-        /*
-        if(evt.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK ||
-                evt.getCause() != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) {
-            return;
-        }
-        System.out.println("step3");
-
-        if(PlayerStorage.getDeathCause((Player) evt.getEntity())==null) {
-            return;
-        }
-         */
         if(evt.getDamager().getCustomName()!=null) {
-            PlayerStorage.setKiller((Player) evt.getEntity(), evt.getDamager().getType().toString()+ "|" + evt.getDamager().getCustomName());
+            PlayerStorage.setKiller((Player) evt.getEntity(), evt.getDamager().getType() + "|" + evt.getDamager().getCustomName());
             return;
         }
         PlayerStorage.setKiller((Player) evt.getEntity(), evt.getDamager().getType().toString());

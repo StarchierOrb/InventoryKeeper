@@ -55,6 +55,9 @@ public class DeathHandler implements Listener {
         //DEBUG OPTION
         if (pluginHandler.getBooleanConfigValue("show-death-cause-on-death", true)) {
             plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause"), evt.getEntity().getName(), PlayerStorage.getDeathCause(evt.getEntity())));
+            if (PlayerStorage.isKilledByEntity(evt.getEntity())) {
+                plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause-entity"), PlayerStorage.getKiller(evt.getEntity())));
+            }
         }
         boolean keepInv;
         if (PluginHandler.IS_LEGACY) {
