@@ -311,7 +311,12 @@ public class DeathHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void forceKeepInventory(PlayerDeathEvent evt) {
-        boolean isKeep = PlayerStorage.isKeep.get(evt.getEntity());
+        boolean isKeep;
+        try {
+            isKeep = PlayerStorage.isKeep.get(evt.getEntity());
+        } catch (NullPointerException e) {
+            return;
+        }
         //force override the result if other plugin changed it
         if (isKeep && !pluginHandler.compatInventory && !evt.getKeepInventory()) {
             Debugger.logDebugMessage("override result to keep inventory.");
