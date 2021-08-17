@@ -77,7 +77,7 @@ public class DeathHandler implements Listener {
         List<String> passedItems = new ArrayList<>();
         String playerWorld = evt.getEntity().getWorld().getName();
         int consumeType = CONSUME_NONE;
-        String[] consumeItemNames = new String[3];
+        ItemBase[] consumeItems = new ItemBase[3];
 
         //Permission check
         permissionCheck:
@@ -96,7 +96,7 @@ public class DeathHandler implements Listener {
         if (!passedItems.isEmpty()) {
             for (ItemBase itemBase : pluginHandler.currentItems) {
                 if (passedItems.contains(itemBase.getName())) {
-                    consumeItemNames[CONSUME_PERMISSION] = itemBase.getName();
+                    consumeItems[CONSUME_PERMISSION] = itemBase;
                     consumeType = CONSUME_PERMISSION;
                     break;
                 }
@@ -105,75 +105,79 @@ public class DeathHandler implements Listener {
 
         //Physical items check
         int physicalSlot = -1;
-        if (consumeType == CONSUME_NONE) {
-            HashMap<String, Integer> passedPhysicalItems = new HashMap<>();
-            for (int i = 0; i < evt.getEntity().getInventory().getSize(); i++) {
-                if (evt.getEntity().getInventory().getItem(i) == null) {
-                    continue;
-                }
-                for (ItemBase itemBase : pluginHandler.currentItems) {
-                    try {
-                        if (evt.getEntity().getInventory().getItem(i).isSimilar(itemBase.getItem())) {
-                            processPhysicalItems(evt, playerWorld, passedPhysicalItems, i, itemBase);
-                            break;
-                        }
-                    } catch (Exception e) {
-                        ItemMeta item = itemBase.getItem().getItemMeta();
-                        ItemMeta target = evt.getEntity().getInventory().getItem(i).getItemMeta();
-                        if (item.getDisplayName().equals(target.getDisplayName()) && item.getLore().equals(target.getLore()) &&
-                                itemBase.getItem().getType().equals(evt.getEntity().getInventory().getItem(i).getType())) {
-                            processPhysicalItems(evt, playerWorld, passedPhysicalItems, i, itemBase);
-                            break;
-                        }
+        HashMap<String, Integer> passedPhysicalItems = new HashMap<>();
+        for (int i = 0; i < evt.getEntity().getInventory().getSize(); i++) {
+            if (evt.getEntity().getInventory().getItem(i) == null) {
+                continue;
+            }
+            for (ItemBase itemBase : pluginHandler.currentItems) {
+                try {
+                    if (evt.getEntity().getInventory().getItem(i).isSimilar(itemBase.getItem())) {
+                        processPhysicalItems(evt, playerWorld, passedPhysicalItems, i, itemBase);
+                        break;
+                    }
+                } catch (Exception e) {
+                    ItemMeta item = itemBase.getItem().getItemMeta();
+                    ItemMeta target = evt.getEntity().getInventory().getItem(i).getItemMeta();
+                    if (item.getDisplayName().equals(target.getDisplayName()) && item.getLore().equals(target.getLore()) &&
+                            itemBase.getItem().getType().equals(evt.getEntity().getInventory().getItem(i).getType())) {
+                        processPhysicalItems(evt, playerWorld, passedPhysicalItems, i, itemBase);
+                        break;
                     }
                 }
             }
-            if (!passedPhysicalItems.isEmpty()) {
-                for (ItemBase itemBase : pluginHandler.currentItems) {
-                    if (passedPhysicalItems.containsKey(itemBase.getName())) {
-                        physicalSlot = passedPhysicalItems.get(itemBase.getName());
-                        consumeItemNames[CONSUME_PHYSICAL] = itemBase.getName();
-                        consumeType = CONSUME_PHYSICAL;
-                        break;
-                    }
+        }
+        if (!passedPhysicalItems.isEmpty()) {
+            for (ItemBase itemBase : pluginHandler.currentItems) {
+                if (passedPhysicalItems.containsKey(itemBase.getName())) {
+                    physicalSlot = passedPhysicalItems.get(itemBase.getName());
+                    consumeItems[CONSUME_PHYSICAL] = itemBase;
+                    consumeType = CONSUME_PHYSICAL;
+                    break;
                 }
             }
         }
 
         //Virtual items check
-        if (consumeType == CONSUME_NONE) {
-            passedItems = new ArrayList<>();
-            virtualCheck:
-            for (String key : pluginHandler.itemNames) {
-                if (dataManager.getVirtualCount(evt.getEntity(), key) > 0) {
-                    for (String s : pluginHandler.getDisabledWorlds(key)) {
-                        if (playerWorld.equalsIgnoreCase(s)) {
-                            continue virtualCheck;
-                        }
+        passedItems = new ArrayList<>();
+        virtualCheck:
+        for (String key : pluginHandler.itemNames) {
+            if (dataManager.getVirtualCount(evt.getEntity(), key) > 0) {
+                for (String s : pluginHandler.getDisabledWorlds(key)) {
+                    if (playerWorld.equalsIgnoreCase(s)) {
+                        continue virtualCheck;
                     }
-                    if (!processCondition(key, evt.getEntity())) {
-                        continue;
-                    }
-                    passedItems.add(key);
                 }
+                if (!processCondition(key, evt.getEntity())) {
+                    continue;
+                }
+                passedItems.add(key);
             }
-            if (!passedItems.isEmpty()) {
-                for (ItemBase itemBase : pluginHandler.currentItems) {
-                    if (passedItems.contains(itemBase.getName())) {
-                        consumeItemNames[CONSUME_VIRTUAL] = itemBase.getName();
-                        consumeType = CONSUME_VIRTUAL;
-                        break;
-                    }
+        }
+        if (!passedItems.isEmpty()) {
+            for (ItemBase itemBase : pluginHandler.currentItems) {
+                if (passedItems.contains(itemBase.getName())) {
+                    consumeItems[CONSUME_VIRTUAL] = itemBase;
+                    consumeType = CONSUME_VIRTUAL;
+                    break;
                 }
             }
         }
-
-        Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumeType: " + consumeType);
-
-        if (consumeType == CONSUME_NONE) {
+        if (consumeType != CONSUME_NONE) {
+            ItemBase highestItem = consumeItems[consumeType];
+            for (int i = 0; i < consumeItems.length; i++) {
+                if (consumeItems[i] == null) {
+                    continue;
+                }
+                if (consumeItems[i].getPriority() > highestItem.getPriority()) {
+                    highestItem = consumeItems[i];
+                    consumeType = i;
+                }
+            }
+        } else {
             PlayerStorage.removeKiller(evt.getEntity());
             PlayerStorage.clearPlayer(evt.getEntity());
-            PlayerStorage.setConsumed(evt.getEntity(), "");
+            PlayerStorage.setConsumed(evt.getEntity(), PluginHandler.EMPTY_ITEM);
             if (evt.getKeepInventory()) {
                 evt.setKeepInventory(false);
             }
@@ -182,18 +186,20 @@ public class DeathHandler implements Listener {
             commandExec.runCommands(evt.getEntity(), true, "settings.run-commands-on-death-if-drops", true);
             commandExec.runRandomCommands(evt.getEntity(), true, "settings.run-random-commands-on-death-if-drops", true);
             Bukkit.getServer().getPluginManager().callEvent(new PlayerDropInventoryEvent(evt.getEntity(), pluginHandler, dataManager));
+            Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumeType: " + consumeType);
             return;
         }
 
+        Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumeType: " + consumeType);
 
         //Process player inventory stage
         PlayerStorage.removeKiller(evt.getEntity());
         PlayerStorage.clearPlayer(evt.getEntity());
-        PlayerStorage.setConsumed(evt.getEntity(), consumeItemNames[consumeType]);
-        Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumed item: " + consumeItemNames[consumeType]);
+        PlayerStorage.setConsumed(evt.getEntity(), consumeItems[consumeType]);
+        Debugger.logDebugMessage(evt.getEntity().getName() + " died, consumed item: " + consumeItems[consumeType]);
         commandExec.doKeepModInventory(evt.getEntity());
-        commandExec.runCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-commands-on-death", false);
-        commandExec.runRandomCommands(evt.getEntity(), true, consumeItemNames[consumeType] + ".run-random-commands-on-death", false);
+        commandExec.runCommands(evt.getEntity(), true, consumeItems[consumeType] + ".run-commands-on-death", false);
+        commandExec.runRandomCommands(evt.getEntity(), true, consumeItems[consumeType] + ".run-random-commands-on-death", false);
         PlayerStorage.isKeep.put(evt.getEntity(), true);
         boolean clearVanish = pluginHandler.getBooleanConfigValue("clear-vanishing-curse-items", true);
         boolean dropBinding = pluginHandler.getBooleanConfigValue("drop-binding-curse-items", true);
@@ -208,7 +214,7 @@ public class DeathHandler implements Listener {
             evt.getEntity().getInventory().setItem(physicalSlot, targetItem);
             Debugger.logDebugMessage(evt.getEntity().getName() + " died, target slot:" + physicalSlot);
         } else if (consumeType == CONSUME_VIRTUAL) {
-            dataManager.setConsumed(evt.getEntity(), consumeItemNames[consumeType]);
+            dataManager.setConsumed(evt.getEntity(), consumeItems[consumeType].getName());
         }
         int i = 0;
         boolean isModern = PluginHandler.FIXED_SERVER_VERSION > 1101;
@@ -239,7 +245,7 @@ public class DeathHandler implements Listener {
                 continue;
             }
             clearSpecificItems:
-            for (String lore : pluginHandler.getList(consumeItemNames[consumeType] + ".items-with-lore-to-be-removed-on-death", false)) {
+            for (String lore : pluginHandler.getList(consumeItems[consumeType] + ".items-with-lore-to-be-removed-on-death", false)) {
                 for (String itemLore : item.getItemMeta().getLore()) {
                     if (itemLore.equalsIgnoreCase(lore)) {
                         evt.getEntity().getInventory().setItem(i, null);
@@ -249,7 +255,7 @@ public class DeathHandler implements Listener {
             }
             i++;
         }
-        Bukkit.getServer().getPluginManager().callEvent(new PlayerConsumeItemEvent(evt.getEntity(), pluginHandler.getItemBase(consumeItemNames[consumeType]),
+        Bukkit.getServer().getPluginManager().callEvent(new PlayerConsumeItemEvent(evt.getEntity(), consumeItems[consumeType],
                 pluginHandler, dataManager));
         if (pluginHandler.compatInventory) {
             PlayerStorage.saveInventory(evt.getEntity(), new PlayerInventoryStorage(evt.getEntity()));
@@ -259,8 +265,8 @@ public class DeathHandler implements Listener {
             evt.setKeepInventory(true);
         }
         evt.getDrops().clear();
-        evt.getEntity().sendMessage(pluginHandler.getConfigValue(consumeItemNames[consumeType] + ".death-message", false));
-        if (pluginHandler.getBooleanConfigValue(consumeItemNames[consumeType] + ".save-exp", false)) {
+        evt.getEntity().sendMessage(pluginHandler.getConfigValue(consumeItems[consumeType] + ".death-message", false));
+        if (pluginHandler.getBooleanConfigValue(consumeItems[consumeType] + ".save-exp", false)) {
             if (pluginHandler.compatLevel) {
                 PlayerStorage.saveLevel(evt.getEntity(), evt.getEntity().getLevel());
                 evt.setKeepLevel(false);
@@ -271,7 +277,7 @@ public class DeathHandler implements Listener {
                 evt.setDroppedExp(0);
             }
         } else {
-            int lost = expHandler.loseExp(evt, consumeItemNames[consumeType]);
+            int lost = expHandler.loseExp(evt, consumeItems[consumeType].getName());
             if (pluginHandler.compatLevel) {
                 PlayerStorage.saveLevel(evt.getEntity(), evt.getEntity().getLevel() - lost);
                 evt.setNewLevel(0);

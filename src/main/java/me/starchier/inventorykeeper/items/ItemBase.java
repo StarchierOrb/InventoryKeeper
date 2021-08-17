@@ -3,6 +3,7 @@ package me.starchier.inventorykeeper.items;
 import me.starchier.inventorykeeper.util.Debugger;
 import me.starchier.inventorykeeper.util.ItemHandler;
 import me.starchier.inventorykeeper.util.PluginHandler;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -55,7 +56,26 @@ public class ItemBase {
                 enabledDeathType.put(entry.getKey(), true);
             }
         }
-        Debugger.logDebugMessage("loaded " + enabledDeathType.size() + " types");
+        Debugger.logDebugMessage("loaded " + enabledDeathType.size() + " death types");
+    }
+
+    public ItemBase(String name) {
+        this.name = name;
+        item = null;
+        saveExp = false;
+        expLostPercentage = null;
+        displayName = null;
+        disabledWorlds = null;
+        runCommandsOnDeath = null;
+        runRandomCommandsOnDeath = null;
+        runCommandsOnRespawn = null;
+        runRandomCommandsOnRespawn = null;
+        removeItemsWithLore = null;
+        priority = 0;
+        entitiesListFilter = null;
+        entitiesNameFilter = null;
+        deathMessage = null;
+        foodLevel = null;
     }
 
     public ItemStack getItem() {
@@ -126,4 +146,8 @@ public class ItemBase {
         return foodLevel;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -26,6 +26,7 @@ public class PluginHandler {
     public FoodLevel defaultFoodLevel;
     public boolean compatInventory;
     public boolean compatLevel;
+    public static final ItemBase EMPTY_ITEM = new ItemBase(null);
 
     public PluginHandler(InventoryKeeper plugin) {
         this.plugin = plugin;

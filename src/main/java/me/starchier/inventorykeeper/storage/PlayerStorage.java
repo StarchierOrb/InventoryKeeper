@@ -1,5 +1,6 @@
 package me.starchier.inventorykeeper.storage;
 
+import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -16,7 +17,7 @@ public class PlayerStorage {
     //Storage the killer for a player
     public static HashMap<Player, String> killerMap = new HashMap<>();
     //Storage if any items are consumed, return null if drops
-    public static HashMap<Player, String> consumeMap = new HashMap<>();
+    public static HashMap<Player, ItemBase> consumeMap = new HashMap<>();
     //Storage players' food level
     public static HashMap<Player, Integer> foodLevel = new HashMap<>();
     //Storage players' saturation level
@@ -106,11 +107,11 @@ public class PlayerStorage {
         return getKiller(player) != null;
     }
 
-    public static String getConsumed(Player player) {
+    public static ItemBase getConsumed(Player player) {
         return consumeMap.get(player);
     }
 
-    public static void setConsumed(Player player, String consumed) {
+    public static void setConsumed(Player player, ItemBase consumed) {
         consumeMap.remove(player);
         consumeMap.put(player, consumed);
     }

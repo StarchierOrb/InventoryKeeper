@@ -33,13 +33,12 @@ public class RespawnHandler implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent evt) {
-        String consumedItem;
-        consumedItem = PlayerStorage.getConsumed(evt.getPlayer());
+        ItemBase consumedItem = PlayerStorage.getConsumed(evt.getPlayer());
         if (consumedItem == null) {
             Debugger.logDebugMessage(evt.getPlayer().getName() + " Respawn: no death cause");
             return;
         }
-        if (consumedItem.equals("")) {
+        if (consumedItem == PluginHandler.EMPTY_ITEM) {
             commandExec.runCommands(evt.getPlayer(), false, "settings.run-commands-on-respawn-if-drops", true);
             commandExec.runRandomCommands(evt.getPlayer(), false, "settings.run-random-commands-on-respawn-if-drops", true);
             int finalFood = pluginHandler.defaultFoodLevel.getFinalFoodLevel(PlayerStorage.getFoodLevel(evt.getPlayer()));
@@ -54,11 +53,11 @@ public class RespawnHandler implements Listener {
         commandExec.doRestoreModInventory(evt.getPlayer());
         commandExec.runCommands(evt.getPlayer(), false, consumedItem + ".run-commands-on-respawn", false);
         commandExec.runRandomCommands(evt.getPlayer(), false, consumedItem + ".run-random-commands-on-respawn", false);
-        FoodLevel foodLevel = pluginHandler.getItemBase(consumedItem).getFoodLevel();
+        FoodLevel foodLevel = consumedItem.getFoodLevel();
         int finalFood = foodLevel.getFinalFoodLevel(PlayerStorage.getFoodLevel(evt.getPlayer()));
         int finalSaturation = foodLevel.getFinalSaturationLevel(PlayerStorage.getSaturationLevel(evt.getPlayer()));
         applyFoodLevel(evt.getPlayer(), finalFood, finalSaturation);
-        callEvent(evt.getPlayer(), pluginHandler.getItemBase(consumedItem));
+        callEvent(evt.getPlayer(), consumedItem);
         Debugger.logDebugMessage(evt.getPlayer().getName() + " Respawn: consumed " + consumedItem);
         PlayerStorage.resetConsumed(evt.getPlayer());
     }
