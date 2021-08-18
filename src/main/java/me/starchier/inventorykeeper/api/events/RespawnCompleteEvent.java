@@ -7,14 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class PlayerRespawnWithItemEvent extends Event {
+public class RespawnCompleteEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final ItemBase item;
     private final PluginHandler pluginHandler;
     private final DataManager dataManager;
 
-    public PlayerRespawnWithItemEvent(Player player, ItemBase item, PluginHandler pluginHandler, DataManager dataManager) {
+    public RespawnCompleteEvent(Player player, ItemBase item, PluginHandler pluginHandler, DataManager dataManager) {
         this.player = player;
         this.item = item;
         this.pluginHandler = pluginHandler;

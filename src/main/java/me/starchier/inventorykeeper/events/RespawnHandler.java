@@ -1,7 +1,7 @@
 package me.starchier.inventorykeeper.events;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
-import me.starchier.inventorykeeper.api.events.PlayerRespawnWithItemEvent;
+import me.starchier.inventorykeeper.api.events.RespawnCompleteEvent;
 import me.starchier.inventorykeeper.command.CommandExec;
 import me.starchier.inventorykeeper.items.FoodLevel;
 import me.starchier.inventorykeeper.items.ItemBase;
@@ -98,7 +98,7 @@ public class RespawnHandler implements Listener {
     private void callEvent(Player player, ItemBase item) {
         new BukkitRunnable() {
             public void run() {
-                Bukkit.getServer().getPluginManager().callEvent(new PlayerRespawnWithItemEvent(player,
+                Bukkit.getServer().getPluginManager().callEvent(new RespawnCompleteEvent(player,
                         item, pluginHandler, dataManager));
             }
         }.runTaskLater(plugin, 12);

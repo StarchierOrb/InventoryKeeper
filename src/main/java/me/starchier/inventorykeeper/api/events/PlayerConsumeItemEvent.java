@@ -13,12 +13,14 @@ public class PlayerConsumeItemEvent extends Event {
     private final ItemBase item;
     private final PluginHandler pluginHandler;
     private final DataManager dataManager;
+    private final int consumeType;
 
-    public PlayerConsumeItemEvent(Player player, ItemBase item, PluginHandler pluginHandler, DataManager dataManager) {
+    public PlayerConsumeItemEvent(Player player, ItemBase item, PluginHandler pluginHandler, DataManager dataManager, int consumeType) {
         this.player = player;
         this.item = item;
         this.pluginHandler = pluginHandler;
         this.dataManager = dataManager;
+        this.consumeType = consumeType;
     }
 
     public PluginHandler getPluginHandler() {
@@ -43,5 +45,9 @@ public class PlayerConsumeItemEvent extends Event {
 
     public ItemBase getItem() {
         return item;
+    }
+
+    public int getConsumeType() {
+        return consumeType;
     }
 }
