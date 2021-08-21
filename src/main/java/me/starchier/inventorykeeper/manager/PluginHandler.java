@@ -132,7 +132,12 @@ public class PluginHandler {
     public void loadItems(ItemUtils itemUtils) {
         currentItems = new ArrayList<>();
         itemNames = new ArrayList<>();
-        Set<String> itemKeys = itemsConfig.getConfigurationSection("items").getKeys(false);
+        Set<String> itemKeys;
+        try {
+            itemKeys = itemsConfig.getConfigurationSection("items").getKeys(false);
+        } catch (NullPointerException e) {
+            itemKeys = new HashSet<>();
+        }
         for (String key : itemKeys) {
             String itemID = getConfigValue(key + ".item-id", false);
             if (!itemUtils.isItem(key)) {
