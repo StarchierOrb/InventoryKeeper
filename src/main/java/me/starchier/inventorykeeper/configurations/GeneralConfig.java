@@ -1,6 +1,5 @@
 package me.starchier.inventorykeeper.configurations;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -57,7 +56,7 @@ public class GeneralConfig {
     public static class ConfigDefault {
         public static final ConfigElement<Boolean> DEBUG = new ConfigElement<>("settings.debug", false);
         public static final ConfigElement<Boolean> SHOW_DEATH_CAUSE = new ConfigElement<>("settings.show-death-cause-on-death", false);
-        public static final ConfigElement<Boolean> GALACTICRAFT_MOD_SUPPORT = new ConfigElement<>("settings.galacticraft-mod-support", true);
+        public static final ConfigElement<Boolean> GALACTICRAFT_MOD_SUPPORT = new ConfigElement<>("settings.galacticraft-mod-support", false);
         public static final ConfigElement<Boolean> CLEAR_VANISHING_CURSE_ITEMS = new ConfigElement<>("settings.clear-vanishing-curse-items", true);
         public static final ConfigElement<Boolean> DROP_BINDING_CURSE_ITEMS = new ConfigElement<>("settings.drop-binding-curse-items", false);
         public static final ConfigElement<String> HUNGER_LEVEL = new ConfigElement<>("settings.default-hunger-level", "set,10");
