@@ -1,8 +1,10 @@
 package me.starchier.inventorykeeper;
 
 import me.starchier.inventorykeeper.bStats.MetricsLite;
-import me.starchier.inventorykeeper.command.CommandExec;
-import me.starchier.inventorykeeper.command.CommandTab;
+import me.starchier.inventorykeeper.manager.DataManager;
+import me.starchier.inventorykeeper.manager.PluginHandler;
+import me.starchier.inventorykeeper.util.CommandExec;
+import me.starchier.inventorykeeper.command.CommandInvKeep;
 import me.starchier.inventorykeeper.configurations.GeneralConfig;
 import me.starchier.inventorykeeper.configurations.ItemsConfig;
 import me.starchier.inventorykeeper.events.*;
@@ -50,20 +52,21 @@ public final class InventoryKeeper extends JavaPlugin {
             }
         }
         ph.initConfigCache();
-        ItemHandler ih = new ItemHandler(this, ph);
+        ItemUtils ih = new ItemUtils(this, ph);
         Debugger.enabledDebug = ph.getBooleanConfigValue("debug", true);
         ph.loadItems(ih);
         getLogger().info(MessagesUtil.getMessage("init-player-data"));
         DataManager dataManager = new DataManager(dataFile, ph);
         dataManager.startupProcess();
         getLogger().info(MessagesUtil.getMessage("init-commands"));
-        getCommand("invkeep").setExecutor(new CommandTab(this, dataManager, ph, ih));
-        getCommand("invkeep").setTabCompleter(new CommandTab(this, dataManager, ph, ih));
+        CommandInvKeep commandInvKeep = new CommandInvKeep(this, dataManager, ph, ih);
+        getCommand("invkeep").setExecutor(commandInvKeep);
+        getCommand("invkeep").setTabCompleter(commandInvKeep);
         getLogger().info(MessagesUtil.getMessage("init-listeners"));
         CommandExec commandExec = new CommandExec(ph, this);
-        Bukkit.getPluginManager().registerEvents(new DeathHandler(this, dataManager, commandExec, ph), this);
+        Bukkit.getPluginManager().registerEvents(new DeathListener(this, dataManager, commandExec, ph), this);
         Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
-        Bukkit.getPluginManager().registerEvents(new RespawnHandler(commandExec, ph, this, dataManager), this);
+        Bukkit.getPluginManager().registerEvents(new RespawnListener(commandExec, ph, this, dataManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDataInit(dataManager), this);
         //Bukkit.getPluginManager().registerEvents(new InventoryClickHandler(this),this);
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(ih, ph), this);

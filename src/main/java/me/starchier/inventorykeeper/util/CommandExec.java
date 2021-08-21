@@ -1,8 +1,7 @@
-package me.starchier.inventorykeeper.command;
+package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
-import me.starchier.inventorykeeper.util.PluginHandler;
-import me.starchier.inventorykeeper.util.StringUtil;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

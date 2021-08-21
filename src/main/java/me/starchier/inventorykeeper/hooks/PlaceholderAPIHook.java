@@ -2,9 +2,8 @@ package me.starchier.inventorykeeper.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.starchier.inventorykeeper.InventoryKeeper;
-import me.starchier.inventorykeeper.util.DataManager;
-import me.starchier.inventorykeeper.util.Debugger;
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.manager.DataManager;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

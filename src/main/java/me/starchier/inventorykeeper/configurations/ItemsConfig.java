@@ -2,7 +2,7 @@ package me.starchier.inventorykeeper.configurations;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 

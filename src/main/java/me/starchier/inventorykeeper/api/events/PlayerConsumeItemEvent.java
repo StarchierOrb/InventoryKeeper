@@ -1,8 +1,8 @@
 package me.starchier.inventorykeeper.api.events;
 
 import me.starchier.inventorykeeper.items.ItemBase;
-import me.starchier.inventorykeeper.util.DataManager;
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.manager.DataManager;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

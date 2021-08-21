@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
@@ -16,11 +17,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ItemHandler {
+public class ItemUtils {
     private final InventoryKeeper plugin;
     private final PluginHandler pluginHandler;
 
-    public ItemHandler(InventoryKeeper plugin, PluginHandler pluginHandler) {
+    public ItemUtils(InventoryKeeper plugin, PluginHandler pluginHandler) {
         this.plugin = plugin;
         this.pluginHandler = pluginHandler;
     }

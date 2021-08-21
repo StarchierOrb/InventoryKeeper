@@ -2,6 +2,7 @@ package me.starchier.inventorykeeper.util;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.items.ItemBase;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,12 +11,12 @@ import org.bukkit.inventory.ItemStack;
 public class CommandUtil {
     private final InventoryKeeper plugin;
     private final PluginHandler pluginHandler;
-    private final ItemHandler itemHandler;
+    private final ItemUtils itemUtils;
 
-    public CommandUtil(InventoryKeeper plugin, PluginHandler pluginHandler, ItemHandler itemHandler) {
+    public CommandUtil(InventoryKeeper plugin, PluginHandler pluginHandler, ItemUtils itemUtils) {
         this.plugin = plugin;
         this.pluginHandler = pluginHandler;
-        this.itemHandler = itemHandler;
+        this.itemUtils = itemUtils;
     }
 
     public Player findPlayer(String pl) {
@@ -32,7 +33,7 @@ public class CommandUtil {
             sender.sendMessage(pluginHandler.getMessage("player-not-found").replace("%s", args[3]));
             return;
         }
-        if (!itemHandler.isItem(args[2])) {
+        if (!itemUtils.isItem(args[2])) {
             sender.sendMessage(String.format(pluginHandler.getMessage("item-not-exist"), args[2]));
             return;
         }

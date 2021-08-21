@@ -1,4 +1,4 @@
-package me.starchier.inventorykeeper.util;
+package me.starchier.inventorykeeper.manager;
 
 import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.Bukkit;

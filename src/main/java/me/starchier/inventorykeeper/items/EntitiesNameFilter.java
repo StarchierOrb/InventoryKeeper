@@ -1,6 +1,6 @@
 package me.starchier.inventorykeeper.items;
 
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 
 import java.util.List;
 

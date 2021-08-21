@@ -3,7 +3,9 @@ package me.starchier.inventorykeeper.events;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.api.events.PlayerConsumeItemEvent;
 import me.starchier.inventorykeeper.api.events.PlayerDropInventoryEvent;
-import me.starchier.inventorykeeper.command.CommandExec;
+import me.starchier.inventorykeeper.manager.DataManager;
+import me.starchier.inventorykeeper.manager.PluginHandler;
+import me.starchier.inventorykeeper.util.CommandExec;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
 import me.starchier.inventorykeeper.storage.PlayerInventoryStorage;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DeathHandler implements Listener {
+public class DeathListener implements Listener {
     private final InventoryKeeper plugin;
     private final DataManager dataManager;
     private final CommandExec commandExec;
@@ -33,7 +35,7 @@ public class DeathHandler implements Listener {
     private final ExpHandler expHandler;
 
 
-    public DeathHandler(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
+    public DeathListener(InventoryKeeper plugin, DataManager dataManager, CommandExec commandExec, PluginHandler pluginHandler) {
         this.plugin = plugin;
         this.dataManager = dataManager;
         this.commandExec = commandExec;

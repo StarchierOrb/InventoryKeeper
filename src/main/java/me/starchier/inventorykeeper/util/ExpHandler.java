@@ -1,5 +1,6 @@
 package me.starchier.inventorykeeper.util;
 
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Random;

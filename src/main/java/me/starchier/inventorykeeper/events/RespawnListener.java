@@ -2,14 +2,14 @@ package me.starchier.inventorykeeper.events;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.api.events.RespawnCompleteEvent;
-import me.starchier.inventorykeeper.command.CommandExec;
+import me.starchier.inventorykeeper.util.CommandExec;
 import me.starchier.inventorykeeper.items.FoodLevel;
 import me.starchier.inventorykeeper.items.ItemBase;
 import me.starchier.inventorykeeper.storage.PlayerInventoryStorage;
 import me.starchier.inventorykeeper.storage.PlayerStorage;
-import me.starchier.inventorykeeper.util.DataManager;
+import me.starchier.inventorykeeper.manager.DataManager;
 import me.starchier.inventorykeeper.util.Debugger;
-import me.starchier.inventorykeeper.util.PluginHandler;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,13 +18,13 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class RespawnHandler implements Listener {
+public class RespawnListener implements Listener {
     private final CommandExec commandExec;
     private final PluginHandler pluginHandler;
     private final InventoryKeeper plugin;
     private final DataManager dataManager;
 
-    public RespawnHandler(CommandExec commandExec, PluginHandler pluginHandler, InventoryKeeper plugin, DataManager dataManager) {
+    public RespawnListener(CommandExec commandExec, PluginHandler pluginHandler, InventoryKeeper plugin, DataManager dataManager) {
         this.commandExec = commandExec;
         this.pluginHandler = pluginHandler;
         this.plugin = plugin;

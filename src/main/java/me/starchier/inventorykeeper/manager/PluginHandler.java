@@ -1,9 +1,11 @@
-package me.starchier.inventorykeeper.util;
+package me.starchier.inventorykeeper.manager;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.FoodLevel;
 import me.starchier.inventorykeeper.items.ItemBase;
+import me.starchier.inventorykeeper.util.ItemUtils;
+import me.starchier.inventorykeeper.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -127,19 +129,19 @@ public class PluginHandler {
         return p.matcher(s).matches();
     }
 
-    public void loadItems(ItemHandler itemHandler) {
+    public void loadItems(ItemUtils itemUtils) {
         currentItems = new ArrayList<>();
         itemNames = new ArrayList<>();
         Set<String> itemKeys = itemsConfig.getConfigurationSection("items").getKeys(false);
         for (String key : itemKeys) {
             String itemID = getConfigValue(key + ".item-id", false);
-            if (!itemHandler.isItem(key)) {
+            if (!itemUtils.isItem(key)) {
                 plugin.getLogger().warning(String.format(MessagesUtil.getMessage("item-not-valid"), itemID));
                 continue;
             }
-            itemHandler.validEnchant(key);
-            itemHandler.cacheSkull(key);
-            currentItems.add(new ItemBase(key, itemHandler, this));
+            itemUtils.validEnchant(key);
+            itemUtils.cacheSkull(key);
+            currentItems.add(new ItemBase(key, itemUtils, this));
             itemNames.add(key);
             plugin.getLogger().info(" - " + String.format(MessagesUtil.getMessage("loaded-item"), key));
         }

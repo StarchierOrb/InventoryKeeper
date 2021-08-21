@@ -1,6 +1,6 @@
 package me.starchier.inventorykeeper.events;
 
-import me.starchier.inventorykeeper.util.DataManager;
+import me.starchier.inventorykeeper.manager.DataManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

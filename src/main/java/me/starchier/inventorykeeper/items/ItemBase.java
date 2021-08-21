@@ -1,9 +1,8 @@
 package me.starchier.inventorykeeper.items;
 
 import me.starchier.inventorykeeper.util.Debugger;
-import me.starchier.inventorykeeper.util.ItemHandler;
-import me.starchier.inventorykeeper.util.PluginHandler;
-import org.bukkit.entity.Item;
+import me.starchier.inventorykeeper.util.ItemUtils;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -30,9 +29,9 @@ public class ItemBase {
     private final FoodLevel foodLevel;
 
 
-    public ItemBase(String name, ItemHandler itemHandler, PluginHandler pluginHandler) {
+    public ItemBase(String name, ItemUtils itemUtils, PluginHandler pluginHandler) {
         this.name = name;
-        item = itemHandler.buildItem(name);
+        item = itemUtils.buildItem(name);
         displayName = pluginHandler.getConfigValue(name + ".name", false);
         saveExp = pluginHandler.getBooleanConfigValue(name + ".save-exp", false);
         expLostPercentage = pluginHandler.getConfigValue(name + ".exp-lose-percentage", false);

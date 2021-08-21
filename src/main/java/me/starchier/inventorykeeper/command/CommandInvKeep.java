@@ -3,6 +3,8 @@ package me.starchier.inventorykeeper.command;
 import me.starchier.inventorykeeper.InventoryKeeper;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
+import me.starchier.inventorykeeper.manager.DataManager;
+import me.starchier.inventorykeeper.manager.PluginHandler;
 import me.starchier.inventorykeeper.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,19 +19,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandTab implements TabExecutor {
+public class CommandInvKeep implements TabExecutor {
     private final InventoryKeeper plugin;
     private final DataManager dataManager;
     private final PluginHandler pluginHandler;
-    private final ItemHandler itemHandler;
+    private final ItemUtils itemUtils;
     private final CommandUtil commandUtil;
 
-    public CommandTab(InventoryKeeper plugin, DataManager dataManager, PluginHandler pluginHandler, ItemHandler itemHandler) {
+    public CommandInvKeep(InventoryKeeper plugin, DataManager dataManager, PluginHandler pluginHandler, ItemUtils itemUtils) {
         this.plugin = plugin;
         this.dataManager = dataManager;
         this.pluginHandler = pluginHandler;
-        this.itemHandler = itemHandler;
-        commandUtil = new CommandUtil(plugin, pluginHandler, itemHandler);
+        this.itemUtils = itemUtils;
+        commandUtil = new CommandUtil(plugin, pluginHandler, itemUtils);
     }
 
     private final String[] subCommands = {"give", "get", "reload", "check", "take", "set"};
@@ -79,7 +81,7 @@ public class CommandTab implements TabExecutor {
                     plugin.getLogger().info(MessagesUtil.getMessage("reloading-config"));
                     plugin.reloadConfig();
                     pluginHandler.initConfigCache();
-                    pluginHandler.loadItems(itemHandler);
+                    pluginHandler.loadItems(itemUtils);
                     plugin.getLogger().info(MessagesUtil.getMessage("reloading-player-data"));
                     dataManager.reloadData();
                     dataManager.startupProcess();
