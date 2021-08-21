@@ -46,11 +46,12 @@ public class DeathHandler implements Listener {
 
         //DEBUG OPTION
         if (pluginHandler.getBooleanConfigValue("show-death-cause-on-death", true)) {
+            String deathCause = PlayerStorage.getDeathCause(evt.getEntity()).toString();
             if (PlayerStorage.isKilledByEntity(evt.getEntity())) {
-                plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause"), evt.getEntity().getName(), (PlayerStorage.getKiller(evt.getEntity()).contains("PLAYER") ? "PVP" : PlayerStorage.getDeathCause(evt.getEntity()))));
+                plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause"), evt.getEntity().getName(), (PlayerStorage.getKiller(evt.getEntity()).contains("PLAYER") ? "PVP" + " (" + deathCause + ")" : deathCause)));
                 plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause-entity"), PlayerStorage.getKiller(evt.getEntity())));
             } else {
-                plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause"), evt.getEntity().getName(), PlayerStorage.getDeathCause(evt.getEntity())));
+                plugin.getLogger().info(ChatColor.GOLD + String.format(MessagesUtil.getMessage("debug.death-cause"), evt.getEntity().getName(), deathCause));
             }
         }
         boolean keepInv;
