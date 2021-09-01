@@ -1,5 +1,6 @@
 package me.starchier.inventorykeeper;
 
+import me.starchier.inventorykeeper.api.InvKeepAPI;
 import me.starchier.inventorykeeper.bStats.MetricsLite;
 import me.starchier.inventorykeeper.manager.DataManager;
 import me.starchier.inventorykeeper.manager.PluginHandler;
@@ -18,9 +19,13 @@ import java.io.File;
 import java.io.IOException;
 
 public final class InventoryKeeper extends JavaPlugin {
-    public static boolean papiEnabled = false;
+    protected static boolean papiEnabled = false;
+    public static InventoryKeeper instance = null;
+    private InvKeepAPI api = null;
+
     @Override
     public void onEnable() {
+        instance = this;
         PluginHandler ph = new PluginHandler(this);
         MessagesUtil.initMessageBundle();
         getLogger().info(MessagesUtil.getMessage("server-version") + PluginHandler.SERVER_VERSION + (PluginHandler.IS_LEGACY ? MessagesUtil.getMessage("is-legacy") : ""));
@@ -58,6 +63,7 @@ public final class InventoryKeeper extends JavaPlugin {
         getLogger().info(MessagesUtil.getMessage("init-player-data"));
         DataManager dataManager = new DataManager(dataFile, ph);
         dataManager.startupProcess();
+        api = new InvKeepAPI(dataManager);
         getLogger().info(MessagesUtil.getMessage("init-commands"));
         CommandInvKeep commandInvKeep = new CommandInvKeep(this, dataManager, ph, ih);
         getCommand("invkeep").setExecutor(commandInvKeep);
@@ -89,4 +95,13 @@ public final class InventoryKeeper extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
     }
+
+    public static InventoryKeeper getInstance() {
+        return instance;
+    }
+
+    public InvKeepAPI getAPI() {
+        return api;
+    }
+
 }

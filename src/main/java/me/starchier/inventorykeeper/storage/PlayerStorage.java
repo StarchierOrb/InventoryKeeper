@@ -3,13 +3,9 @@ package me.starchier.inventorykeeper.storage;
 import me.starchier.inventorykeeper.items.ItemBase;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class PlayerStorage {
     //Storage the death cause for player
