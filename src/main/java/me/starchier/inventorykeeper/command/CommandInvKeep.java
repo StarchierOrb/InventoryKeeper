@@ -1,6 +1,7 @@
 package me.starchier.inventorykeeper.command;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
+import me.starchier.inventorykeeper.api.addon.InventoryKeeperAddon;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.ItemBase;
 import me.starchier.inventorykeeper.manager.DataManager;
@@ -86,6 +87,10 @@ public class CommandInvKeep implements TabExecutor {
                     dataManager.reloadData();
                     dataManager.startupProcess();
                     Debugger.enabledDebug = pluginHandler.getBooleanConfigValue("debug", true);
+                    for (InventoryKeeperAddon addon : PluginHandler.getAddons()) {
+                        plugin.getLogger().info(MessagesUtil.getMessage("reload-addon"));
+                        addon.onReload();
+                    }
                     sender.sendMessage(ChatColor.GOLD + "(!)" + ChatColor.GREEN + String.format(MessagesUtil.getMessage("load-item-completed"), pluginHandler.currentItems.size()));
                     sender.sendMessage(pluginHandler.getMessage("reloaded-config"));
                     return true;

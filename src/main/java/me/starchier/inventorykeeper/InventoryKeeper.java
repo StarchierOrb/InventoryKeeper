@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 public final class InventoryKeeper extends JavaPlugin {
-    protected static boolean papiEnabled = false;
+    public static boolean papiEnabled = false;
     public static InventoryKeeper instance = null;
     private InvKeepAPI api = null;
 
@@ -63,7 +63,7 @@ public final class InventoryKeeper extends JavaPlugin {
         getLogger().info(MessagesUtil.getMessage("init-player-data"));
         DataManager dataManager = new DataManager(dataFile, ph);
         dataManager.startupProcess();
-        api = new InvKeepAPI(dataManager);
+        api = new InvKeepAPI(dataManager, ph);
         getLogger().info(MessagesUtil.getMessage("init-commands"));
         CommandInvKeep commandInvKeep = new CommandInvKeep(this, dataManager, ph, ih);
         getCommand("invkeep").setExecutor(commandInvKeep);

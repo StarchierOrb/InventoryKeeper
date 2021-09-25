@@ -1,6 +1,7 @@
 package me.starchier.inventorykeeper.manager;
 
 import me.starchier.inventorykeeper.InventoryKeeper;
+import me.starchier.inventorykeeper.api.addon.InventoryKeeperAddon;
 import me.starchier.inventorykeeper.i18n.MessagesUtil;
 import me.starchier.inventorykeeper.items.FoodLevel;
 import me.starchier.inventorykeeper.items.ItemBase;
@@ -28,6 +29,7 @@ public class PluginHandler {
     public FoodLevel defaultFoodLevel;
     public boolean compatInventory;
     public boolean compatLevel;
+    protected static List<InventoryKeeperAddon> addons = new ArrayList<>();
     public static final ItemBase EMPTY_ITEM = new ItemBase(null);
 
     public PluginHandler(InventoryKeeper plugin) {
@@ -165,6 +167,13 @@ public class PluginHandler {
             }
         }
         return null;
+    }
+
+    public static List<InventoryKeeperAddon> getAddons() {
+        return addons;
+    }
+    public static void registerAddon(InventoryKeeperAddon addon) {
+        getAddons().add(addon);
     }
 
     public List<String> getDisabledWorlds(String itemGroup) {
